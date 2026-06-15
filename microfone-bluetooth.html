@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microfone Bluetooth</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .mic-button {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: none;
+    background: #222;
+    color: #fff;
+    font-size: 3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    margin-bottom: 1.5rem;
+    position: relative;
+    outline: none;
+  }
+
+  .mic-button.active { background: #e53935; }
+  .mic-button:active { transform: scale(0.95); }
+
+  .pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #e53935;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mic-button.active .pulse-ring {
+    animation: pulse 1.4s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    100% { transform: scale(1.7); opacity: 0; }
+  }
+
+  .status {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 2rem;
+    min-height: 1.4rem;
+    text-align: center;
+  }
+
+  .status.on  { color: #ef9a9a; }
+  .status.err { color: #ff8a65; }
+
+  .visualizer {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 60px;
+    margin-bottom: 2.5rem;
+  }
+
+  .bar {
+    width: 8px;
+    background: #333;
+    border-radius: 4px;
+    min-height: 4px;
+  }
+
+  .bar.active {
+    background: linear-gradient(to top, #e53935, #ef9a9a);
+  }
+
+  .controls {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .control-label {
+    font-size: 0.8rem;
+    color: #888;
+    width: 70px;
+    flex-shrink: 0;
+  }
+
+  input[type=range] {
+    flex: 1;
+    accent-color: #e53935;
+    height: 4px;
+  }
+
+  .control-value {
+    font-size: 0.85rem;
+    color: #ccc;
+    width: 40px;
+    text-align: right;
+  }
+
+  .tip {
+    font-size: 0.75rem;
+    color: #555;
+    text-align: center;
+    margin-top: 2.5rem;
+    line-height: 1.5;
+    max-width: 300px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎙️ Microfone Bluetooth</h1>
+<p class="subtitle">Redireciona o mic para o fone conectado</p>
+
+<button class="mic-button" id="btnMic" aria-label="Ligar microfone">
+  <span class="pulse-ring"></span>
+  🎤
+</button>
+
+<p class="status" id="status">Toque para ligar</p>
+
+<div class="visualizer">
+  <div class="bar" id="b0"></div>
+  <div class="bar" id="b1"></div>
+  <div class="bar" id="b2"></div>
+  <div class="bar" id="b3"></div>
+  <div class="bar" id="b4"></div>
+  <div class="bar" id="b5"></div>
+  <div class="bar" id="b6"></div>
+  <div class="bar" id="b7"></div>
+  <div class="bar" id="b8"></div>
+  <div class="bar" id="b9"></div>
+  <div class="bar" id="b10"></div>
+  <div class="bar" id="b11"></div>
+</div>
+
+<div class="controls">
+  <div class="control-row">
+    <span class="control-label">Volume</span>
+    <input type="range" id="gain" min="0" max="300" value="100" step="1">
+    <span class="control-value" id="gainVal">100%</span>
+  </div>
+</div>
+
+<p class="tip">
+  Conecte o fone Bluetooth antes de ligar.<br>
+  Mantenha a tela ativa enquanto usar.
+</p>
+
+<script>
+let audioCtx = null;
+let sourceNode = null;
+let gainNode = null;
+let analyser = null;
+let stream = null;
+let animId = null;
+let running = false;
+
+const btn = document.getElementById('btnMic');
+const statusEl = document.getElementById('status');
+const gainSlider = document.getElementById('gain');
+const gainValEl = document.getElementById('gainVal');
+const bars = Array.from({length: 12}, (_, i) => document.getElementById('b' + i));
+
+gainSlider.addEventListener('input', () => {
+  gainValEl.textContent = gainSlider.value + '%';
+  if (gainNode) gainNode.gain.value = gainSlider.value / 100;
+});
+
+btn.addEventListener('click', async () => {
+  running ? stopMic() : await startMic();
+});
+
+async function startMic() {
+  try {
+    statusEl.textContent = 'Solicitando permissão...';
+    statusEl.className = 'status';
+
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    await audioCtx.resume();
+
+    sourceNode = audioCtx.createMediaStreamSource(stream);
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = gainSlider.value / 100;
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+
+    sourceNode.connect(gainNode);
+    gainNode.connect(analyser);
+    gainNode.connect(audioCtx.destination);
+
+    running = true;
+    btn.classList.add('active');
+    btn.innerHTML = '<span class="pulse-ring"></span>⏹️';
+    statusEl.textContent = 'Transmitindo para o fone...';
+    statusEl.className = 'status on';
+    bars.forEach(b => b.classList.add('active'));
+    drawBars();
+
+  } catch (err) {
+    statusEl.className = 'status err';
+    statusEl.textContent = err.name === 'NotAllowedError'
+      ? 'Permissão negada. Libere o microfone nas configurações.'
+      : 'Erro: ' + err.message;
+  }
+}
+
+function stopMic() {
+  if (animId) cancelAnimationFrame(animId);
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (audioCtx) audioCtx.close();
+
+  stream = null; audioCtx = null; sourceNode = null;
+  gainNode = null; analyser = null; running = false;
+
+  btn.classList.remove('active');
+  btn.innerHTML = '<span class="pulse-ring"></span>🎤';
+  statusEl.textContent = 'Toque para ligar';
+  statusEl.className = 'status';
+  bars.forEach(b => { b.classList.remove('active'); b.style.height = '4px'; });
+}
+
+function drawBars() {
+  if (!analyser) return;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const step = Math.floor(data.length / bars.length);
+  bars.forEach((bar, i) => {
+    const h = Math.max(4, Math.round((data[i * step] / 255) * 56));
+    bar.style.height = h + 'px';
+  });
+  animId = requestAnimationFrame(drawBars);
+}
+</script>
+</body>
+</html>
