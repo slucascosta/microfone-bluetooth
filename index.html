@@ -17,6 +17,7 @@
     align-items: center;
     justify-content: center;
     padding: 2rem 1rem;
+    gap: 0;
   }
 
   h1 {
@@ -30,23 +31,23 @@
     font-size: 0.85rem;
     color: #888;
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
   }
 
   .mic-button {
-    width: 140px;
-    height: 140px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     border: none;
     background: #222;
     color: #fff;
-    font-size: 3rem;
+    font-size: 2.8rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.2s, transform 0.1s;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     position: relative;
     outline: none;
   }
@@ -74,9 +75,9 @@
   }
 
   .status {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #aaa;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     min-height: 1.4rem;
     text-align: center;
   }
@@ -88,25 +89,55 @@
     display: flex;
     align-items: flex-end;
     gap: 4px;
-    height: 60px;
-    margin-bottom: 2.5rem;
+    height: 50px;
+    margin-bottom: 2rem;
   }
 
   .bar {
     width: 8px;
-    background: #333;
+    background: #2a2a2a;
     border-radius: 4px;
     min-height: 4px;
+    transition: height 0.05s;
   }
 
   .bar.active {
     background: linear-gradient(to top, #e53935, #ef9a9a);
   }
 
-  .controls {
+  .panel {
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
+
+  .section-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #555;
+    margin-bottom: 0.3rem;
+  }
+
+  select {
+    width: 100%;
+    background: #1a1a1a;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+
+  select:focus { outline: none; border-color: #e53935; }
 
   .control-row {
     display: flex;
@@ -135,19 +166,33 @@
   }
 
   .tip {
-    font-size: 0.75rem;
-    color: #555;
+    font-size: 0.72rem;
+    color: #444;
     text-align: center;
-    margin-top: 2.5rem;
-    line-height: 1.5;
+    margin-top: 2rem;
+    line-height: 1.6;
     max-width: 300px;
   }
+
+  .refresh-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 0.3rem;
+    display: inline-block;
+  }
+
+  .refresh-btn:active { background: #1a1a1a; }
 </style>
 </head>
 <body>
 
 <h1>🎙️ Microfone Bluetooth</h1>
-<p class="subtitle">Redireciona o mic para o fone conectado</p>
+<p class="subtitle">Escolha entrada e saída de áudio</p>
 
 <button class="mic-button" id="btnMic" aria-label="Ligar microfone">
   <span class="pulse-ring"></span>
@@ -171,17 +216,31 @@
   <div class="bar" id="b11"></div>
 </div>
 
-<div class="controls">
+<div class="panel">
+
+  <div>
+    <p class="section-label">Entrada (microfone)</p>
+    <select id="inputSelect"><option value="">-- Aguardando permissão --</option></select>
+  </div>
+
+  <div>
+    <p class="section-label">Saída (fone / caixa)</p>
+    <select id="outputSelect"><option value="">-- Padrão do sistema --</option></select>
+    <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
+  </div>
+
   <div class="control-row">
     <span class="control-label">Volume</span>
     <input type="range" id="gain" min="0" max="300" value="100" step="1">
     <span class="control-value" id="gainVal">100%</span>
   </div>
+
 </div>
 
 <p class="tip">
   Conecte o fone Bluetooth antes de ligar.<br>
-  Mantenha a tela ativa enquanto usar.
+  Mantenha a tela ativa enquanto usar.<br>
+  Se o fone não aparecer, toque em "Atualizar".
 </p>
 
 <script>
@@ -192,11 +251,15 @@ let analyser = null;
 let stream = null;
 let animId = null;
 let running = false;
+let audioEl = null;
 
 const btn = document.getElementById('btnMic');
 const statusEl = document.getElementById('status');
 const gainSlider = document.getElementById('gain');
 const gainValEl = document.getElementById('gainVal');
+const inputSelect = document.getElementById('inputSelect');
+const outputSelect = document.getElementById('outputSelect');
+const refreshBtn = document.getElementById('refreshBtn');
 const bars = Array.from({length: 12}, (_, i) => document.getElementById('b' + i));
 
 gainSlider.addEventListener('input', () => {
@@ -204,8 +267,59 @@ gainSlider.addEventListener('input', () => {
   if (gainNode) gainNode.gain.value = gainSlider.value / 100;
 });
 
+refreshBtn.addEventListener('click', loadDevices);
+
+async function loadDevices() {
+  try {
+    // Precisamos de permissão primeiro para ver os nomes
+    const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    tempStream.getTracks().forEach(t => t.stop());
+
+    const devices = await navigator.mediaDevices.enumerateDevices();
+
+    const inputs  = devices.filter(d => d.kind === 'audioinput');
+    const outputs = devices.filter(d => d.kind === 'audiooutput');
+
+    const prevInput  = inputSelect.value;
+    const prevOutput = outputSelect.value;
+
+    inputSelect.innerHTML = '';
+    inputs.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = d.deviceId;
+      opt.textContent = d.label || 'Microfone ' + (i + 1);
+      inputSelect.appendChild(opt);
+    });
+    if (prevInput) inputSelect.value = prevInput;
+
+    outputSelect.innerHTML = '<option value="">Padrão do sistema</option>';
+    outputs.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = d.deviceId;
+      opt.textContent = d.label || 'Saída ' + (i + 1);
+      outputSelect.appendChild(opt);
+    });
+    if (prevOutput) outputSelect.value = prevOutput;
+
+    if (outputs.length === 0) {
+      outputSelect.innerHTML = '<option value="">Saída padrão (API indisponível)</option>';
+    }
+
+  } catch(e) {
+    statusEl.textContent = 'Não foi possível listar dispositivos.';
+    statusEl.className = 'status err';
+  }
+}
+
 btn.addEventListener('click', async () => {
-  running ? stopMic() : await startMic();
+  if (running) {
+    stopMic();
+  } else {
+    if (inputSelect.options.length <= 1 && !inputSelect.value) {
+      await loadDevices();
+    }
+    await startMic();
+  }
 });
 
 async function startMic() {
@@ -213,7 +327,13 @@ async function startMic() {
     statusEl.textContent = 'Solicitando permissão...';
     statusEl.className = 'status';
 
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const constraints = {
+      audio: inputSelect.value
+        ? { deviceId: { exact: inputSelect.value } }
+        : true
+    };
+
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     await audioCtx.resume();
@@ -226,15 +346,40 @@ async function startMic() {
 
     sourceNode.connect(gainNode);
     gainNode.connect(analyser);
+
+    // Tenta usar setSinkId para redirecionar a saída se suportado
+    const destStream = audioCtx.createMediaStreamDestination();
+    gainNode.connect(destStream);
+
+    audioEl = new Audio();
+    audioEl.srcObject = destStream.stream;
+    audioEl.muted = false;
+
+    const selectedOutput = outputSelect.value;
+    if (selectedOutput && typeof audioEl.setSinkId === 'function') {
+      try {
+        await audioEl.setSinkId(selectedOutput);
+      } catch(e) {
+        console.warn('setSinkId falhou, usando saída padrão', e);
+      }
+    }
+
+    await audioEl.play();
+
+    // Fallback: também conecta direto ao destination do contexto
     gainNode.connect(audioCtx.destination);
 
     running = true;
     btn.classList.add('active');
     btn.innerHTML = '<span class="pulse-ring"></span>⏹️';
-    statusEl.textContent = 'Transmitindo para o fone...';
+
+    const outLabel = outputSelect.options[outputSelect.selectedIndex]?.text || 'saída padrão';
+    statusEl.textContent = 'Transmitindo → ' + outLabel;
     statusEl.className = 'status on';
     bars.forEach(b => b.classList.add('active'));
     drawBars();
+
+    await loadDevices();
 
   } catch (err) {
     statusEl.className = 'status err';
@@ -246,6 +391,7 @@ async function startMic() {
 
 function stopMic() {
   if (animId) cancelAnimationFrame(animId);
+  if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (audioCtx) audioCtx.close();
 
@@ -265,11 +411,17 @@ function drawBars() {
   analyser.getByteFrequencyData(data);
   const step = Math.floor(data.length / bars.length);
   bars.forEach((bar, i) => {
-    const h = Math.max(4, Math.round((data[i * step] / 255) * 56));
+    const h = Math.max(4, Math.round((data[i * step] / 255) * 46));
     bar.style.height = h + 'px';
   });
   animId = requestAnimationFrame(drawBars);
 }
+
+// Carrega dispositivos ao abrir (sem pedir permissão ainda)
+navigator.mediaDevices.enumerateDevices().then(devices => {
+  const inputs = devices.filter(d => d.kind === 'audioinput');
+  if (inputs.length > 0 && inputs[0].label) loadDevices();
+});
 </script>
 </body>
 </html>
