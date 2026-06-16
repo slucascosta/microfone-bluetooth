@@ -17,7 +17,6 @@
     align-items: center;
     justify-content: center;
     padding: 2rem 1rem;
-    gap: 0;
   }
 
   h1 {
@@ -81,7 +80,6 @@
     min-height: 1.4rem;
     text-align: center;
   }
-
   .status.on  { color: #ef9a9a; }
   .status.err { color: #ff8a65; }
 
@@ -90,7 +88,7 @@
     align-items: flex-end;
     gap: 4px;
     height: 50px;
-    margin-bottom: 2rem;
+    margin-bottom: 1.8rem;
   }
 
   .bar {
@@ -105,50 +103,20 @@
     background: linear-gradient(to top, #e53935, #ef9a9a);
   }
 
-  .panel {
+  /* Volume sempre visível */
+  .volume-row {
     width: 100%;
     max-width: 340px;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .section-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #555;
-    margin-bottom: 0.3rem;
-  }
-
-  select {
-    width: 100%;
-    background: #1a1a1a;
-    color: #fff;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    cursor: pointer;
-  }
-
-  select:focus { outline: none; border-color: #e53935; }
-
-  .control-row {
-    display: flex;
     align-items: center;
     gap: 12px;
+    margin-bottom: 1.2rem;
   }
 
   .control-label {
     font-size: 0.8rem;
     color: #888;
-    width: 70px;
+    width: 60px;
     flex-shrink: 0;
   }
 
@@ -165,34 +133,99 @@
     text-align: right;
   }
 
-  .tip {
-    font-size: 0.72rem;
-    color: #444;
-    text-align: center;
-    margin-top: 2rem;
-    line-height: 1.6;
-    max-width: 300px;
+  /* Botão Avançado */
+  .advanced-toggle {
+    background: none;
+    border: 1px solid #333;
+    color: #666;
+    font-size: 0.78rem;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 0;
+    transition: border-color 0.2s, color 0.2s;
   }
+  .advanced-toggle:hover { border-color: #555; color: #aaa; }
+  .advanced-toggle.open  { border-color: #e53935; color: #e53935; }
+
+  /* Painel avançado */
+  .advanced-panel {
+    width: 100%;
+    max-width: 340px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s;
+    opacity: 0;
+  }
+
+  .advanced-panel.open {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 1rem;
+  }
+
+  .advanced-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #555;
+    margin-bottom: 0.3rem;
+  }
+
+  select {
+    width: 100%;
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+
+  select:focus { outline: none; border-color: #e53935; }
 
   .refresh-btn {
     background: none;
-    border: 1px solid #333;
-    color: #888;
+    border: 1px solid #2a2a2a;
+    color: #666;
     font-size: 0.75rem;
     padding: 4px 10px;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 0.3rem;
-    display: inline-block;
+    margin-top: 0.4rem;
   }
+  .refresh-btn:active { background: #222; }
 
-  .refresh-btn:active { background: #1a1a1a; }
+  .tip {
+    font-size: 0.72rem;
+    color: #444;
+    text-align: center;
+    margin-top: 1.8rem;
+    line-height: 1.6;
+    max-width: 300px;
+  }
 </style>
 </head>
 <body>
 
 <h1>🎙️ Microfone Bluetooth</h1>
-<p class="subtitle">Escolha entrada e saída de áudio</p>
+<p class="subtitle">Redireciona o mic para o fone conectado</p>
 
 <button class="mic-button" id="btnMic" aria-label="Ligar microfone">
   <span class="pulse-ring"></span>
@@ -216,31 +249,34 @@
   <div class="bar" id="b11"></div>
 </div>
 
-<div class="panel">
+<div class="volume-row">
+  <span class="control-label">Volume</span>
+  <input type="range" id="gain" min="0" max="300" value="100" step="1">
+  <span class="control-value" id="gainVal">100%</span>
+</div>
 
-  <div>
-    <p class="section-label">Entrada (microfone)</p>
-    <select id="inputSelect"><option value="">-- Aguardando permissão --</option></select>
+<button class="advanced-toggle" id="advancedToggle">⚙ Avançado</button>
+
+<div class="advanced-panel" id="advancedPanel">
+  <div class="advanced-inner">
+
+    <div>
+      <p class="section-label">Entrada (microfone)</p>
+      <select id="inputSelect"><option value="">-- Toque em Atualizar --</option></select>
+    </div>
+
+    <div>
+      <p class="section-label">Saída (fone / caixa)</p>
+      <select id="outputSelect"><option value="">Padrão do sistema</option></select>
+      <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
+    </div>
+
   </div>
-
-  <div>
-    <p class="section-label">Saída (fone / caixa)</p>
-    <select id="outputSelect"><option value="">-- Padrão do sistema --</option></select>
-    <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
-  </div>
-
-  <div class="control-row">
-    <span class="control-label">Volume</span>
-    <input type="range" id="gain" min="0" max="300" value="100" step="1">
-    <span class="control-value" id="gainVal">100%</span>
-  </div>
-
 </div>
 
 <p class="tip">
   Conecte o fone Bluetooth antes de ligar.<br>
-  Mantenha a tela ativa enquanto usar.<br>
-  Se o fone não aparecer, toque em "Atualizar".
+  Mantenha a tela ativa enquanto usar.
 </p>
 
 <script>
@@ -250,17 +286,27 @@ let gainNode = null;
 let analyser = null;
 let stream = null;
 let animId = null;
-let running = false;
 let audioEl = null;
+let running = false;
 
-const btn = document.getElementById('btnMic');
-const statusEl = document.getElementById('status');
-const gainSlider = document.getElementById('gain');
-const gainValEl = document.getElementById('gainVal');
-const inputSelect = document.getElementById('inputSelect');
-const outputSelect = document.getElementById('outputSelect');
-const refreshBtn = document.getElementById('refreshBtn');
+const btn            = document.getElementById('btnMic');
+const statusEl       = document.getElementById('status');
+const gainSlider     = document.getElementById('gain');
+const gainValEl      = document.getElementById('gainVal');
+const inputSelect    = document.getElementById('inputSelect');
+const outputSelect   = document.getElementById('outputSelect');
+const refreshBtn     = document.getElementById('refreshBtn');
+const advancedToggle = document.getElementById('advancedToggle');
+const advancedPanel  = document.getElementById('advancedPanel');
 const bars = Array.from({length: 12}, (_, i) => document.getElementById('b' + i));
+
+// Toggle avançado
+advancedToggle.addEventListener('click', () => {
+  const open = advancedPanel.classList.toggle('open');
+  advancedToggle.classList.toggle('open', open);
+  advancedToggle.textContent = open ? '✕ Fechar' : '⚙ Avançado';
+  if (open) loadDevices();
+});
 
 gainSlider.addEventListener('input', () => {
   gainValEl.textContent = gainSlider.value + '%';
@@ -271,17 +317,15 @@ refreshBtn.addEventListener('click', loadDevices);
 
 async function loadDevices() {
   try {
-    // Precisamos de permissão primeiro para ver os nomes
     const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     tempStream.getTracks().forEach(t => t.stop());
 
     const devices = await navigator.mediaDevices.enumerateDevices();
-
     const inputs  = devices.filter(d => d.kind === 'audioinput');
     const outputs = devices.filter(d => d.kind === 'audiooutput');
 
-    const prevInput  = inputSelect.value;
-    const prevOutput = outputSelect.value;
+    const prevIn  = inputSelect.value;
+    const prevOut = outputSelect.value;
 
     inputSelect.innerHTML = '';
     inputs.forEach((d, i) => {
@@ -290,7 +334,7 @@ async function loadDevices() {
       opt.textContent = d.label || 'Microfone ' + (i + 1);
       inputSelect.appendChild(opt);
     });
-    if (prevInput) inputSelect.value = prevInput;
+    if (prevIn) inputSelect.value = prevIn;
 
     outputSelect.innerHTML = '<option value="">Padrão do sistema</option>';
     outputs.forEach((d, i) => {
@@ -299,11 +343,7 @@ async function loadDevices() {
       opt.textContent = d.label || 'Saída ' + (i + 1);
       outputSelect.appendChild(opt);
     });
-    if (prevOutput) outputSelect.value = prevOutput;
-
-    if (outputs.length === 0) {
-      outputSelect.innerHTML = '<option value="">Saída padrão (API indisponível)</option>';
-    }
+    if (prevOut) outputSelect.value = prevOut;
 
   } catch(e) {
     statusEl.textContent = 'Não foi possível listar dispositivos.';
@@ -312,14 +352,7 @@ async function loadDevices() {
 }
 
 btn.addEventListener('click', async () => {
-  if (running) {
-    stopMic();
-  } else {
-    if (inputSelect.options.length <= 1 && !inputSelect.value) {
-      await loadDevices();
-    }
-    await startMic();
-  }
+  running ? stopMic() : await startMic();
 });
 
 async function startMic() {
@@ -328,9 +361,7 @@ async function startMic() {
     statusEl.className = 'status';
 
     const constraints = {
-      audio: inputSelect.value
-        ? { deviceId: { exact: inputSelect.value } }
-        : true
+      audio: inputSelect.value ? { deviceId: { exact: inputSelect.value } } : true
     };
 
     stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -339,15 +370,14 @@ async function startMic() {
     await audioCtx.resume();
 
     sourceNode = audioCtx.createMediaStreamSource(stream);
-    gainNode = audioCtx.createGain();
+    gainNode   = audioCtx.createGain();
     gainNode.gain.value = gainSlider.value / 100;
-    analyser = audioCtx.createAnalyser();
+    analyser   = audioCtx.createAnalyser();
     analyser.fftSize = 64;
 
     sourceNode.connect(gainNode);
     gainNode.connect(analyser);
 
-    // Tenta usar setSinkId para redirecionar a saída se suportado
     const destStream = audioCtx.createMediaStreamDestination();
     gainNode.connect(destStream);
 
@@ -355,18 +385,11 @@ async function startMic() {
     audioEl.srcObject = destStream.stream;
     audioEl.muted = false;
 
-    const selectedOutput = outputSelect.value;
-    if (selectedOutput && typeof audioEl.setSinkId === 'function') {
-      try {
-        await audioEl.setSinkId(selectedOutput);
-      } catch(e) {
-        console.warn('setSinkId falhou, usando saída padrão', e);
-      }
+    if (outputSelect.value && typeof audioEl.setSinkId === 'function') {
+      try { await audioEl.setSinkId(outputSelect.value); } catch(e) {}
     }
 
     await audioEl.play();
-
-    // Fallback: também conecta direto ao destination do contexto
     gainNode.connect(audioCtx.destination);
 
     running = true;
@@ -374,12 +397,10 @@ async function startMic() {
     btn.innerHTML = '<span class="pulse-ring"></span>⏹️';
 
     const outLabel = outputSelect.options[outputSelect.selectedIndex]?.text || 'saída padrão';
-    statusEl.textContent = 'Transmitindo → ' + outLabel;
+    statusEl.textContent = '● ' + outLabel;
     statusEl.className = 'status on';
     bars.forEach(b => b.classList.add('active'));
     drawBars();
-
-    await loadDevices();
 
   } catch (err) {
     statusEl.className = 'status err';
@@ -392,7 +413,7 @@ async function startMic() {
 function stopMic() {
   if (animId) cancelAnimationFrame(animId);
   if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
-  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (stream)  stream.getTracks().forEach(t => t.stop());
   if (audioCtx) audioCtx.close();
 
   stream = null; audioCtx = null; sourceNode = null;
@@ -416,12 +437,6 @@ function drawBars() {
   });
   animId = requestAnimationFrame(drawBars);
 }
-
-// Carrega dispositivos ao abrir (sem pedir permissão ainda)
-navigator.mediaDevices.enumerateDevices().then(devices => {
-  const inputs = devices.filter(d => d.kind === 'audioinput');
-  if (inputs.length > 0 && inputs[0].label) loadDevices();
-});
 </script>
 </body>
 </html>
