@@ -33,26 +33,48 @@
     margin-bottom: 2rem;
   }
 
-  .mic-button {
-    width: 130px;
-    height: 130px;
+  .buttons-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-label {
+    font-size: 0.72rem;
+    color: #555;
+    text-align: center;
+  }
+
+  .circle-btn {
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     border: none;
     background: #222;
     color: #fff;
-    font-size: 2.8rem;
+    font-size: 2.4rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.2s, transform 0.1s;
-    margin-bottom: 1.2rem;
     position: relative;
     outline: none;
+    flex-shrink: 0;
   }
 
-  .mic-button.active { background: #e53935; }
-  .mic-button:active { transform: scale(0.95); }
+  .circle-btn:active { transform: scale(0.95); }
+
+  .circle-btn.active-mic  { background: #e53935; }
+  .circle-btn.active-rec  { background: #b71c1c; }
 
   .pulse-ring {
     position: absolute;
@@ -64,9 +86,12 @@
     pointer-events: none;
   }
 
-  .mic-button.active .pulse-ring {
+  .circle-btn.active-mic .pulse-ring,
+  .circle-btn.active-rec .pulse-ring {
     animation: pulse 1.4s ease-out infinite;
   }
+
+  .circle-btn.active-rec .pulse-ring { border-color: #b71c1c; }
 
   @keyframes pulse {
     0%   { transform: scale(1);   opacity: 0.6; }
@@ -76,12 +101,21 @@
   .status {
     font-size: 0.95rem;
     color: #aaa;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.6rem;
     min-height: 1.4rem;
     text-align: center;
   }
   .status.on  { color: #ef9a9a; }
   .status.err { color: #ff8a65; }
+
+  .rec-timer {
+    font-size: 0.85rem;
+    color: #ef9a9a;
+    min-height: 1.2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
 
   .visualizer {
     display: flex;
@@ -98,12 +132,8 @@
     min-height: 4px;
     transition: height 0.05s;
   }
+  .bar.active { background: linear-gradient(to top, #e53935, #ef9a9a); }
 
-  .bar.active {
-    background: linear-gradient(to top, #e53935, #ef9a9a);
-  }
-
-  /* Volume sempre visível */
   .volume-row {
     width: 100%;
     max-width: 340px;
@@ -133,7 +163,6 @@
     text-align: right;
   }
 
-  /* Botão Avançado */
   .advanced-toggle {
     background: none;
     border: 1px solid #333;
@@ -142,13 +171,11 @@
     padding: 6px 16px;
     border-radius: 20px;
     cursor: pointer;
-    margin-bottom: 0;
     transition: border-color 0.2s, color 0.2s;
   }
   .advanced-toggle:hover { border-color: #555; color: #aaa; }
   .advanced-toggle.open  { border-color: #e53935; color: #e53935; }
 
-  /* Painel avançado */
   .advanced-panel {
     width: 100%;
     max-width: 340px;
@@ -157,12 +184,7 @@
     transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s;
     opacity: 0;
   }
-
-  .advanced-panel.open {
-    max-height: 300px;
-    opacity: 1;
-    margin-top: 1rem;
-  }
+  .advanced-panel.open { max-height: 300px; opacity: 1; margin-top: 1rem; }
 
   .advanced-inner {
     display: flex;
@@ -197,7 +219,6 @@
     background-position: right 12px center;
     cursor: pointer;
   }
-
   select:focus { outline: none; border-color: #e53935; }
 
   .refresh-btn {
@@ -212,6 +233,52 @@
   }
   .refresh-btn:active { background: #222; }
 
+  .recordings {
+    width: 100%;
+    max-width: 340px;
+    margin-top: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .rec-item {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .rec-info {
+    font-size: 0.8rem;
+    color: #aaa;
+    flex: 1;
+  }
+
+  .rec-info span {
+    display: block;
+    font-size: 0.7rem;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  .rec-download {
+    background: none;
+    border: 1px solid #333;
+    color: #ef9a9a;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .rec-download:active { background: #2a2a2a; }
+
   .tip {
     font-size: 0.72rem;
     color: #444;
@@ -225,28 +292,36 @@
 <body>
 
 <h1>🎙️ Microfone Bluetooth</h1>
-<p class="subtitle">Redireciona o mic para o fone conectado</p>
+<p class="subtitle">Monitoramento e gravação de áudio</p>
 
-<button class="mic-button" id="btnMic" aria-label="Ligar microfone">
-  <span class="pulse-ring"></span>
-  🎤
-</button>
+<div class="buttons-row">
+  <div class="btn-wrap">
+    <button class="circle-btn" id="btnMic" aria-label="Ligar monitoramento">
+      <span class="pulse-ring"></span>
+      🎤
+    </button>
+    <span class="btn-label" id="micLabel">Monitorar</span>
+  </div>
 
-<p class="status" id="status">Toque para ligar</p>
+  <div class="btn-wrap">
+    <button class="circle-btn" id="btnRec" aria-label="Iniciar gravação">
+      <span class="pulse-ring"></span>
+      ⏺
+    </button>
+    <span class="btn-label" id="recLabel">Gravar</span>
+  </div>
+</div>
+
+<p class="status" id="status">Toque para começar</p>
+<p class="rec-timer" id="recTimer"></p>
 
 <div class="visualizer">
-  <div class="bar" id="b0"></div>
-  <div class="bar" id="b1"></div>
-  <div class="bar" id="b2"></div>
-  <div class="bar" id="b3"></div>
-  <div class="bar" id="b4"></div>
-  <div class="bar" id="b5"></div>
-  <div class="bar" id="b6"></div>
-  <div class="bar" id="b7"></div>
-  <div class="bar" id="b8"></div>
-  <div class="bar" id="b9"></div>
-  <div class="bar" id="b10"></div>
-  <div class="bar" id="b11"></div>
+  <div class="bar" id="b0"></div><div class="bar" id="b1"></div>
+  <div class="bar" id="b2"></div><div class="bar" id="b3"></div>
+  <div class="bar" id="b4"></div><div class="bar" id="b5"></div>
+  <div class="bar" id="b6"></div><div class="bar" id="b7"></div>
+  <div class="bar" id="b8"></div><div class="bar" id="b9"></div>
+  <div class="bar" id="b10"></div><div class="bar" id="b11"></div>
 </div>
 
 <div class="volume-row">
@@ -259,52 +334,53 @@
 
 <div class="advanced-panel" id="advancedPanel">
   <div class="advanced-inner">
-
     <div>
       <p class="section-label">Entrada (microfone)</p>
       <select id="inputSelect"><option value="">-- Toque em Atualizar --</option></select>
     </div>
-
     <div>
       <p class="section-label">Saída (fone / caixa)</p>
       <select id="outputSelect"><option value="">Padrão do sistema</option></select>
       <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
     </div>
-
   </div>
 </div>
 
+<div class="recordings" id="recordings"></div>
+
 <p class="tip">
-  Conecte o fone Bluetooth antes de ligar.<br>
-  Mantenha a tela ativa enquanto usar.
+  Conecte o fone antes de ligar.<br>
+  Gravações ficam disponíveis para download abaixo.
 </p>
 
 <script>
-let audioCtx = null;
-let sourceNode = null;
-let gainNode = null;
-let analyser = null;
-let stream = null;
-let animId = null;
-let audioEl = null;
-let running = false;
+let audioCtx = null, sourceNode = null, gainNode = null;
+let analyser = null, stream = null, animId = null;
+let audioEl = null, running = false;
+let mediaRecorder = null, recChunks = [];
+let recInterval = null, recSeconds = 0;
+let recCount = 0;
 
-const btn            = document.getElementById('btnMic');
-const statusEl       = document.getElementById('status');
-const gainSlider     = document.getElementById('gain');
-const gainValEl      = document.getElementById('gainVal');
-const inputSelect    = document.getElementById('inputSelect');
-const outputSelect   = document.getElementById('outputSelect');
-const refreshBtn     = document.getElementById('refreshBtn');
-const advancedToggle = document.getElementById('advancedToggle');
-const advancedPanel  = document.getElementById('advancedPanel');
-const bars = Array.from({length: 12}, (_, i) => document.getElementById('b' + i));
+const btnMic      = document.getElementById('btnMic');
+const btnRec      = document.getElementById('btnRec');
+const micLabel    = document.getElementById('micLabel');
+const recLabel    = document.getElementById('recLabel');
+const statusEl    = document.getElementById('status');
+const recTimerEl  = document.getElementById('recTimer');
+const gainSlider  = document.getElementById('gain');
+const gainValEl   = document.getElementById('gainVal');
+const inputSelect = document.getElementById('inputSelect');
+const outputSelect= document.getElementById('outputSelect');
+const refreshBtn  = document.getElementById('refreshBtn');
+const advToggle   = document.getElementById('advancedToggle');
+const advPanel    = document.getElementById('advancedPanel');
+const recordingsEl= document.getElementById('recordings');
+const bars = Array.from({length:12}, (_,i) => document.getElementById('b'+i));
 
-// Toggle avançado
-advancedToggle.addEventListener('click', () => {
-  const open = advancedPanel.classList.toggle('open');
-  advancedToggle.classList.toggle('open', open);
-  advancedToggle.textContent = open ? '✕ Fechar' : '⚙ Avançado';
+advToggle.addEventListener('click', () => {
+  const open = advPanel.classList.toggle('open');
+  advToggle.classList.toggle('open', open);
+  advToggle.textContent = open ? '✕ Fechar' : '⚙ Avançado';
   if (open) loadDevices();
 });
 
@@ -317,113 +393,195 @@ refreshBtn.addEventListener('click', loadDevices);
 
 async function loadDevices() {
   try {
-    const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    tempStream.getTracks().forEach(t => t.stop());
-
+    const tmp = await navigator.mediaDevices.getUserMedia({ audio: true });
+    tmp.getTracks().forEach(t => t.stop());
     const devices = await navigator.mediaDevices.enumerateDevices();
     const inputs  = devices.filter(d => d.kind === 'audioinput');
     const outputs = devices.filter(d => d.kind === 'audiooutput');
-
-    const prevIn  = inputSelect.value;
-    const prevOut = outputSelect.value;
-
+    const pIn = inputSelect.value, pOut = outputSelect.value;
     inputSelect.innerHTML = '';
-    inputs.forEach((d, i) => {
-      const opt = document.createElement('option');
-      opt.value = d.deviceId;
-      opt.textContent = d.label || 'Microfone ' + (i + 1);
-      inputSelect.appendChild(opt);
+    inputs.forEach((d,i) => {
+      const o = document.createElement('option');
+      o.value = d.deviceId;
+      o.textContent = d.label || 'Microfone '+(i+1);
+      inputSelect.appendChild(o);
     });
-    if (prevIn) inputSelect.value = prevIn;
-
+    if (pIn) inputSelect.value = pIn;
     outputSelect.innerHTML = '<option value="">Padrão do sistema</option>';
-    outputs.forEach((d, i) => {
-      const opt = document.createElement('option');
-      opt.value = d.deviceId;
-      opt.textContent = d.label || 'Saída ' + (i + 1);
-      outputSelect.appendChild(opt);
+    outputs.forEach((d,i) => {
+      const o = document.createElement('option');
+      o.value = d.deviceId;
+      o.textContent = d.label || 'Saída '+(i+1);
+      outputSelect.appendChild(o);
     });
-    if (prevOut) outputSelect.value = prevOut;
-
+    if (pOut) outputSelect.value = pOut;
   } catch(e) {
     statusEl.textContent = 'Não foi possível listar dispositivos.';
     statusEl.className = 'status err';
   }
 }
 
-btn.addEventListener('click', async () => {
-  running ? stopMic() : await startMic();
-});
-
-async function startMic() {
+async function ensureStream() {
+  if (stream) return true;
   try {
     statusEl.textContent = 'Solicitando permissão...';
     statusEl.className = 'status';
-
     const constraints = {
       audio: inputSelect.value ? { deviceId: { exact: inputSelect.value } } : true
     };
-
     stream = await navigator.mediaDevices.getUserMedia(constraints);
-
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     await audioCtx.resume();
-
     sourceNode = audioCtx.createMediaStreamSource(stream);
-    gainNode   = audioCtx.createGain();
+    gainNode = audioCtx.createGain();
     gainNode.gain.value = gainSlider.value / 100;
-    analyser   = audioCtx.createAnalyser();
+    analyser = audioCtx.createAnalyser();
     analyser.fftSize = 64;
-
     sourceNode.connect(gainNode);
     gainNode.connect(analyser);
-
-    const destStream = audioCtx.createMediaStreamDestination();
-    gainNode.connect(destStream);
-
-    audioEl = new Audio();
-    audioEl.srcObject = destStream.stream;
-    audioEl.muted = false;
-
-    if (outputSelect.value && typeof audioEl.setSinkId === 'function') {
-      try { await audioEl.setSinkId(outputSelect.value); } catch(e) {}
-    }
-
-    await audioEl.play();
-    gainNode.connect(audioCtx.destination);
-
-    running = true;
-    btn.classList.add('active');
-    btn.innerHTML = '<span class="pulse-ring"></span>⏹️';
-
-    const outLabel = outputSelect.options[outputSelect.selectedIndex]?.text || 'saída padrão';
-    statusEl.textContent = '● ' + outLabel;
-    statusEl.className = 'status on';
     bars.forEach(b => b.classList.add('active'));
     drawBars();
-
-  } catch (err) {
+    return true;
+  } catch(err) {
     statusEl.className = 'status err';
     statusEl.textContent = err.name === 'NotAllowedError'
       ? 'Permissão negada. Libere o microfone nas configurações.'
       : 'Erro: ' + err.message;
+    return false;
   }
 }
 
-function stopMic() {
-  if (animId) cancelAnimationFrame(animId);
+// — Monitoramento —
+btnMic.addEventListener('click', async () => {
+  if (running) {
+    stopMonitor();
+  } else {
+    if (!await ensureStream()) return;
+    startMonitor();
+  }
+});
+
+async function startMonitor() {
+  const dest = audioCtx.createMediaStreamDestination();
+  gainNode.connect(dest);
+  audioEl = new Audio();
+  audioEl.srcObject = dest.stream;
+  audioEl.muted = false;
+  if (outputSelect.value && typeof audioEl.setSinkId === 'function') {
+    try { await audioEl.setSinkId(outputSelect.value); } catch(e) {}
+  }
+  await audioEl.play();
+  gainNode.connect(audioCtx.destination);
+  running = true;
+  btnMic.classList.add('active-mic');
+  btnMic.innerHTML = '<span class="pulse-ring"></span>⏹️';
+  micLabel.textContent = 'Parar';
+  const outLabel = outputSelect.options[outputSelect.selectedIndex]?.text || 'saída padrão';
+  statusEl.textContent = '● ' + outLabel;
+  statusEl.className = 'status on';
+}
+
+function stopMonitor() {
   if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
-  if (stream)  stream.getTracks().forEach(t => t.stop());
-  if (audioCtx) audioCtx.close();
+  running = false;
+  btnMic.classList.remove('active-mic');
+  btnMic.innerHTML = '<span class="pulse-ring"></span>🎤';
+  micLabel.textContent = 'Monitorar';
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    statusEl.textContent = 'Toque para começar';
+    statusEl.className = 'status';
+    stopStreamIfIdle();
+  }
+}
 
-  stream = null; audioCtx = null; sourceNode = null;
-  gainNode = null; analyser = null; running = false;
+// — Gravação —
+btnRec.addEventListener('click', async () => {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    stopRecording();
+  } else {
+    if (!await ensureStream()) return;
+    startRecording();
+  }
+});
 
-  btn.classList.remove('active');
-  btn.innerHTML = '<span class="pulse-ring"></span>🎤';
-  statusEl.textContent = 'Toque para ligar';
-  statusEl.className = 'status';
-  bars.forEach(b => { b.classList.remove('active'); b.style.height = '4px'; });
+function startRecording() {
+  recChunks = [];
+  recCount++;
+  const recNum = recCount;
+
+  const dest = audioCtx.createMediaStreamDestination();
+  gainNode.connect(dest);
+
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus' : 'audio/webm';
+
+  mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = () => saveRecording(recNum);
+  mediaRecorder.start(200);
+
+  recSeconds = 0;
+  recTimerEl.textContent = '⏺ 00:00';
+  recInterval = setInterval(() => {
+    recSeconds++;
+    const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+    const s = String(recSeconds%60).padStart(2,'0');
+    recTimerEl.textContent = '⏺ ' + m + ':' + s;
+  }, 1000);
+
+  btnRec.classList.add('active-rec');
+  btnRec.innerHTML = '<span class="pulse-ring"></span>⏹️';
+  recLabel.textContent = 'Parar';
+  statusEl.textContent = 'Gravando...';
+  statusEl.className = 'status on';
+}
+
+function stopRecording() {
+  clearInterval(recInterval);
+  mediaRecorder.stop();
+  mediaRecorder = null;
+  btnRec.classList.remove('active-rec');
+  btnRec.innerHTML = '<span class="pulse-ring"></span>⏺';
+  recLabel.textContent = 'Gravar';
+  recTimerEl.textContent = '';
+  if (!running) {
+    statusEl.textContent = 'Toque para começar';
+    statusEl.className = 'status';
+    stopStreamIfIdle();
+  }
+}
+
+function saveRecording(num) {
+  const blob = new Blob(recChunks, { type: 'audio/webm' });
+  const url  = URL.createObjectURL(blob);
+  const now  = new Date();
+  const ts   = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const dur  = recSeconds;
+  const m = String(Math.floor(dur/60)).padStart(2,'0');
+  const s = String(dur%60).padStart(2,'0');
+
+  const item = document.createElement('div');
+  item.className = 'rec-item';
+  item.innerHTML = `
+    <div class="rec-info">
+      Gravação ${num}
+      <span>${ts} · ${m}:${s}</span>
+    </div>
+    <a class="rec-download" href="${url}" download="gravacao-${num}.webm">⬇ Baixar</a>
+  `;
+  recordingsEl.prepend(item);
+}
+
+function stopStreamIfIdle() {
+  const recActive = mediaRecorder && mediaRecorder.state === 'recording';
+  if (!running && !recActive) {
+    if (animId) cancelAnimationFrame(animId);
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (audioCtx) audioCtx.close();
+    stream = null; audioCtx = null; sourceNode = null;
+    gainNode = null; analyser = null;
+    bars.forEach(b => { b.classList.remove('active'); b.style.height = '4px'; });
+  }
 }
 
 function drawBars() {
