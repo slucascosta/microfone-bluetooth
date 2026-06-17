@@ -17,7 +17,6 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   html, body { height: 100%; }
 
   body {
@@ -30,7 +29,6 @@
     justify-content: center;
   }
 
-  /* ── Card centrado no desktop, tela cheia no mobile ── */
   .app {
     width: 100%;
     max-width: 420px;
@@ -42,10 +40,8 @@
     padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(1.5rem, 4vh, 3rem);
   }
 
-  /* No desktop: vira um card flutuante */
   @media (min-width: 600px) and (min-height: 500px) {
     body { background: #050505; }
-
     .app {
       min-height: auto;
       height: auto;
@@ -59,7 +55,6 @@
     }
   }
 
-  /* ── Header ── */
   header { width: 100%; text-align: center; flex-shrink: 0; }
 
   .app-name {
@@ -70,7 +65,6 @@
     color: var(--muted);
   }
 
-  /* ── Hero ── */
   .hero {
     display: flex;
     flex-direction: column;
@@ -81,9 +75,7 @@
     width: 100%;
   }
 
-  @media (min-width: 600px) {
-    .hero { flex: none; }
-  }
+  @media (min-width: 600px) { .hero { flex: none; } }
 
   .circle-btn {
     width: clamp(110px, 28vw, 160px);
@@ -106,10 +98,7 @@
   }
 
   .circle-btn * { pointer-events: none; }
-  .pulse-ring { pointer-events: none !important; }
-  .btn-icon   { pointer-events: none !important; }
 
-  /* No desktop o botão tem tamanho fixo */
   @media (min-width: 600px) {
     .circle-btn { width: 150px; height: 150px; font-size: 3rem; }
   }
@@ -154,7 +143,6 @@
   .status-text.on  { color: #ff6b6b; }
   .status-text.err { color: #ff9966; font-size: 0.78rem; }
 
-  /* ── Visualizador ── */
   .visualizer {
     display: flex;
     align-items: flex-end;
@@ -166,9 +154,7 @@
     margin-bottom: clamp(0.6rem, 2vh, 1.2rem);
   }
 
-  @media (min-width: 600px) {
-    .visualizer { height: 44px; margin-bottom: 0; }
-  }
+  @media (min-width: 600px) { .visualizer { height: 44px; margin-bottom: 0; } }
 
   .bar {
     flex: 1;
@@ -181,7 +167,6 @@
 
   .bar.active { background: var(--red); opacity: 0.85; }
 
-  /* ── Controles ── */
   .controls {
     width: 100%;
     display: flex;
@@ -240,7 +225,7 @@
   .adv-btn-left { display: flex; align-items: center; gap: 10px; }
   .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
-  /* ── Bottom Sheet (mobile) / Modal centrado (desktop) ── */
+  /* ── Overlay ── */
   .overlay {
     position: fixed;
     inset: 0;
@@ -255,6 +240,7 @@
 
   .overlay.open { opacity: 1; pointer-events: all; }
 
+  /* ── Sheet ── */
   .sheet {
     position: fixed;
     bottom: 0;
@@ -272,11 +258,8 @@
     pointer-events: none;
   }
 
-  .sheet.open { pointer-events: all; }
+  .sheet.open { transform: translateY(0); pointer-events: all; }
 
-  .sheet.open { transform: translateY(0); }
-
-  /* Desktop: modal centrado */
   @media (min-width: 600px) {
     .sheet {
       bottom: auto;
@@ -316,6 +299,15 @@
     padding-top: 1.5rem;
   }
 
+  .sheet-section {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1.2rem 0 0.7rem;
+  }
+
   .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.1rem; }
 
   .sheet-label {
@@ -344,6 +336,64 @@
   }
 
   .sheet select:focus { outline: none; border-color: var(--red); }
+
+  /* ── Toggle row ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+  }
+
+  .toggle-info { display: flex; flex-direction: column; gap: 2px; }
+
+  .toggle-name {
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+
+  .toggle-desc {
+    font-size: 0.7rem;
+    color: var(--sub);
+  }
+
+  .toggle {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { display: none; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--muted);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .toggle input:checked ~ .toggle-track { background: var(--red); }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: left 0.2s;
+  }
+
+  .toggle input:checked ~ .toggle-track .toggle-thumb { left: 21px; }
 
   .sheet-refresh {
     background: none;
@@ -426,6 +476,8 @@
   <div class="sheet-handle"></div>
   <p class="sheet-title">Configurações</p>
 
+  <p class="sheet-section">Dispositivos</p>
+
   <div class="sheet-field">
     <span class="sheet-label">Entrada — microfone</span>
     <select id="inputSelect"><option value="">— Toque em Atualizar —</option></select>
@@ -437,6 +489,42 @@
   </div>
 
   <button class="sheet-refresh" id="refreshBtn">↺ Atualizar dispositivos</button>
+
+  <p class="sheet-section">Redução de loop</p>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <span class="toggle-name">Filtro passa-alta</span>
+      <span class="toggle-desc">Corta graves onde o loop se acumula</span>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="toggleHP">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </label>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <span class="toggle-name">Gate de ruído</span>
+      <span class="toggle-desc">Bloqueia som abaixo do limiar da voz</span>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="toggleGate">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </label>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <span class="toggle-name">Compressor</span>
+      <span class="toggle-desc">Limita picos que alimentam o loop</span>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="toggleComp">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </label>
+  </div>
+
   <button class="sheet-close" id="sheetClose">Fechar</button>
 </div>
 
@@ -444,19 +532,24 @@
 let audioCtx = null, sourceNode = null, gainNode = null;
 let analyser = null, stream = null, animId = null;
 let audioEl = null, running = false;
+let hpFilter = null, compressor = null, gateNode = null, gateGain = null;
+let gateInterval = null;
 
-const btnMic     = document.getElementById('btnMic');
-const micLabel   = document.getElementById('micLabel');
-const statusEl   = document.getElementById('status');
-const gainSlider = document.getElementById('gain');
-const gainValEl  = document.getElementById('gainVal');
-const inputSel   = document.getElementById('inputSelect');
-const outputSel  = document.getElementById('outputSelect');
-const refreshBtn = document.getElementById('refreshBtn');
-const advBtn     = document.getElementById('advBtn');
-const overlay    = document.getElementById('overlay');
-const sheet      = document.getElementById('sheet');
-const sheetClose = document.getElementById('sheetClose');
+const btnMic      = document.getElementById('btnMic');
+const micLabel    = document.getElementById('micLabel');
+const statusEl    = document.getElementById('status');
+const gainSlider  = document.getElementById('gain');
+const gainValEl   = document.getElementById('gainVal');
+const inputSel    = document.getElementById('inputSelect');
+const outputSel   = document.getElementById('outputSelect');
+const refreshBtn  = document.getElementById('refreshBtn');
+const advBtn      = document.getElementById('advBtn');
+const overlay     = document.getElementById('overlay');
+const sheet       = document.getElementById('sheet');
+const sheetClose  = document.getElementById('sheetClose');
+const toggleHP    = document.getElementById('toggleHP');
+const toggleGate  = document.getElementById('toggleGate');
+const toggleComp  = document.getElementById('toggleComp');
 const bars = Array.from({length:15}, (_,i) => document.getElementById('b'+i));
 
 function openSheet()  { overlay.classList.add('open'); sheet.classList.add('open'); loadDevices(); }
@@ -465,16 +558,20 @@ function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove
 advBtn.addEventListener('click', openSheet);
 overlay.addEventListener('click', closeSheet);
 sheetClose.addEventListener('click', closeSheet);
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 let touchStartY = 0;
 sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet(); }, { passive: true });
+sheet.addEventListener('touchend', e => { if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet(); }, { passive: true });
 
 gainSlider.addEventListener('input', () => {
   gainValEl.textContent = gainSlider.value + '%';
   if (gainNode) gainNode.gain.value = gainSlider.value / 100;
+});
+
+// Reconstruir cadeia de áudio quando toggles mudam
+[toggleHP, toggleGate, toggleComp].forEach(t => {
+  t.addEventListener('change', () => { if (running) rebuildChain(); });
 });
 
 refreshBtn.addEventListener('click', loadDevices);
@@ -520,14 +617,7 @@ async function ensureStream() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     await audioCtx.resume();
     sourceNode = audioCtx.createMediaStreamSource(stream);
-    gainNode = audioCtx.createGain();
-    gainNode.gain.value = gainSlider.value / 100;
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    sourceNode.connect(gainNode);
-    gainNode.connect(analyser);
     bars.forEach(b => b.classList.add('active'));
-    drawBars();
     return true;
   } catch(err) {
     setStatus(err.name === 'NotAllowedError'
@@ -537,31 +627,130 @@ async function ensureStream() {
   }
 }
 
+function buildProcessingChain() {
+  // Gain
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = gainSlider.value / 100;
+
+  // Filtro passa-alta (corta abaixo de 120Hz)
+  hpFilter = audioCtx.createBiquadFilter();
+  hpFilter.type = 'highpass';
+  hpFilter.frequency.value = 120;
+  hpFilter.Q.value = 0.7;
+
+  // Compressor
+  compressor = audioCtx.createDynamicsCompressor();
+  compressor.threshold.value = -24;
+  compressor.knee.value = 6;
+  compressor.ratio.value = 8;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.15;
+
+  // Gate — usa um GainNode controlado por análise de amplitude
+  gateGain = audioCtx.createGain();
+  gateGain.gain.value = 1;
+
+  // Analyser para o gate
+  gateNode = audioCtx.createAnalyser();
+  gateNode.fftSize = 256;
+
+  // Analyser para visualizador
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 64;
+
+  // Conectar cadeia: source → [hp?] → [gate?] → gain → [comp?] → analyser → dest
+  let node = sourceNode;
+
+  if (toggleHP.checked) {
+    node.connect(hpFilter);
+    node = hpFilter;
+  }
+
+  if (toggleGate.checked) {
+    node.connect(gateNode);
+    node.connect(gateGain);
+    node = gateGain;
+    startGate();
+  }
+
+  node.connect(gainNode);
+  gainNode.connect(analyser);
+
+  if (toggleComp.checked) {
+    gainNode.connect(compressor);
+    return compressor;
+  }
+
+  return gainNode;
+}
+
+function startGate() {
+  const buf = new Uint8Array(gateNode.fftSize);
+  const threshold = 0.015; // limiar de amplitude (~-36dB)
+  const attack = 0.008, release = 0.12;
+  let open = false;
+
+  if (gateInterval) clearInterval(gateInterval);
+
+  gateInterval = setInterval(() => {
+    if (!gateNode || !gateGain) return;
+    gateNode.getByteTimeDomainData(buf);
+    let peak = 0;
+    for (let i = 0; i < buf.length; i++) {
+      const v = Math.abs((buf[i] - 128) / 128);
+      if (v > peak) peak = v;
+    }
+    const shouldOpen = peak > threshold;
+    if (shouldOpen !== open) {
+      open = shouldOpen;
+      const now = audioCtx.currentTime;
+      gateGain.gain.cancelScheduledValues(now);
+      gateGain.gain.setTargetAtTime(open ? 1 : 0, now, open ? attack : release);
+    }
+  }, 16);
+}
+
 async function startMonitor() {
+  const outputNode = buildProcessingChain();
+
   const dest = audioCtx.createMediaStreamDestination();
-  gainNode.connect(dest);
+  outputNode.connect(dest);
+  outputNode.connect(audioCtx.destination);
+
   audioEl = new Audio();
   audioEl.srcObject = dest.stream;
   audioEl.muted = false;
+
   if (outputSel.value && typeof audioEl.setSinkId === 'function') {
     try { await audioEl.setSinkId(outputSel.value); } catch(e) {}
   }
+
   await audioEl.play();
-  gainNode.connect(audioCtx.destination);
   running = true;
   btnMic.classList.add('active-mic');
   btnMic.querySelector('.btn-icon').textContent = '⏹';
   micLabel.textContent = 'Parar';
   const out = outputSel.options[outputSel.selectedIndex]?.text || 'saída padrão';
   setStatus('Monitorando — ' + out, 'on');
+  drawBars();
+}
+
+function rebuildChain() {
+  // Desconecta tudo e reconstrói com novas configurações
+  if (gateInterval) { clearInterval(gateInterval); gateInterval = null; }
+  if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
+  try { sourceNode.disconnect(); } catch(e) {}
+  startMonitor();
 }
 
 function stopMonitor() {
+  if (gateInterval) { clearInterval(gateInterval); gateInterval = null; }
   if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
   if (animId) cancelAnimationFrame(animId);
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (audioCtx) audioCtx.close();
-  stream = null; audioCtx = null; sourceNode = null; gainNode = null; analyser = null;
+  stream = null; audioCtx = null; sourceNode = null;
+  gainNode = null; analyser = null; gateNode = null; gateGain = null;
   running = false;
   btnMic.classList.remove('active-mic');
   btnMic.querySelector('.btn-icon').textContent = '🎤';
