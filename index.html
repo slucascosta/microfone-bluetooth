@@ -54,6 +54,8 @@
       padding: clamp(2rem, 4vh, 3.5rem) 2.5rem clamp(1.5rem, 3vh, 2.5rem);
       gap: clamp(1rem, 3vh, 2rem);
       box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 1;
     }
   }
 
@@ -102,6 +104,10 @@
     user-select: none;
     flex-shrink: 0;
   }
+
+  .circle-btn * { pointer-events: none; }
+  .pulse-ring { pointer-events: none !important; }
+  .btn-icon   { pointer-events: none !important; }
 
   /* No desktop o botão tem tamanho fixo */
   @media (min-width: 600px) {
@@ -194,13 +200,14 @@
     border-radius: 14px;
   }
 
-  .vol-icon { font-size: 0.95rem; flex-shrink: 0; }
+  .vol-icon { font-size: 0.95rem; flex-shrink: 0; pointer-events: none; user-select: none; }
 
   input[type=range] {
     flex: 1;
     accent-color: var(--red);
     height: 3px;
     cursor: pointer;
+    padding: 10px 0;
   }
 
   .vol-val {
@@ -262,7 +269,10 @@
     transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
     max-height: 85dvh;
     overflow-y: auto;
+    pointer-events: none;
   }
+
+  .sheet.open { pointer-events: all; }
 
   .sheet.open { transform: translateY(0); }
 
@@ -379,7 +389,7 @@
 
   <div class="hero">
     <button class="circle-btn" id="btnMic">
-      <span class="pulse-ring"></span>🎤
+      <span class="pulse-ring"></span><span class="btn-icon">🎤</span>
     </button>
     <p class="btn-label" id="micLabel">Monitorar</p>
     <p class="status-text" id="status">Toque para começar</p>
@@ -540,7 +550,7 @@ async function startMonitor() {
   gainNode.connect(audioCtx.destination);
   running = true;
   btnMic.classList.add('active-mic');
-  btnMic.innerHTML = '<span class="pulse-ring"></span>⏹';
+  btnMic.querySelector('.btn-icon').textContent = '⏹';
   micLabel.textContent = 'Parar';
   const out = outputSel.options[outputSel.selectedIndex]?.text || 'saída padrão';
   setStatus('Monitorando — ' + out, 'on');
@@ -554,7 +564,7 @@ function stopMonitor() {
   stream = null; audioCtx = null; sourceNode = null; gainNode = null; analyser = null;
   running = false;
   btnMic.classList.remove('active-mic');
-  btnMic.innerHTML = '<span class="pulse-ring"></span>🎤';
+  btnMic.querySelector('.btn-icon').textContent = '🎤';
   micLabel.textContent = 'Monitorar';
   bars.forEach(b => { b.classList.remove('active'); b.style.height = '3px'; });
   setStatus('Toque para começar', '');
