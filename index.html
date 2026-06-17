@@ -11,7 +11,6 @@
     --sheet:   #181818;
     --border:  #1e1e1e;
     --red:     #ff2d2d;
-    --red-dim: #7a1515;
     --text:    #f0f0f0;
     --muted:   #3a3a3a;
     --sub:     #606060;
@@ -19,48 +18,58 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+  html, body {
+    height: 100%;
+    height: 100dvh;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 3rem;
-    overflow-x: hidden;
+    justify-content: space-between;
+    padding: env(safe-area-inset-top, 1rem) 0 env(safe-area-inset-bottom, 1rem);
+    overflow: hidden;
   }
 
+  /* ── Header ── */
   header {
     width: 100%;
-    padding: 3.5rem 1.5rem 0;
+    padding: clamp(0.8rem, 4vw, 1.5rem) 1.5rem 0;
     text-align: center;
+    flex-shrink: 0;
   }
 
   .app-name {
-    font-size: 0.68rem;
+    font-size: clamp(0.6rem, 2vw, 0.68rem);
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
+  /* ── Hero ── */
   .hero {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 1.5rem 0;
+    flex: 1;
     width: 100%;
+    gap: clamp(0.5rem, 2vh, 0.9rem);
   }
 
   .circle-btn {
-    width: 148px;
-    height: 148px;
+    width: clamp(100px, 36vw, 160px);
+    height: clamp(100px, 36vw, 160px);
     border-radius: 50%;
     border: 1.5px solid var(--border);
     background: var(--surface);
     color: var(--text);
-    font-size: 3rem;
+    font-size: clamp(2rem, 8vw, 3.2rem);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -70,6 +79,7 @@
     transition: transform 0.12s, background 0.2s;
     -webkit-user-select: none;
     user-select: none;
+    flex-shrink: 0;
   }
 
   .circle-btn:active { transform: scale(0.93); }
@@ -92,34 +102,35 @@
   }
 
   .btn-label {
-    font-size: 0.7rem;
+    font-size: clamp(0.6rem, 2.5vw, 0.7rem);
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-top: 0.75rem;
     text-align: center;
   }
 
-  .status-zone {
-    margin-top: 2rem;
+  /* ── Status ── */
+  .status-text {
+    font-size: clamp(0.75rem, 3vw, 0.85rem);
+    color: var(--sub);
+    transition: color 0.3s;
     text-align: center;
-    min-height: 1.6rem;
+    padding: 0 1rem;
   }
-
-  .status-text { font-size: 0.85rem; color: var(--sub); transition: color 0.3s; }
   .status-text.on  { color: #ff6b6b; }
   .status-text.err { color: #ff9966; }
 
+  /* ── Visualizador ── */
   .visualizer {
     display: flex;
     align-items: flex-end;
     justify-content: center;
     gap: 3px;
-    height: 48px;
-    margin: 2rem 0;
-    padding: 0 1.5rem;
+    height: clamp(32px, 8vh, 52px);
     width: 100%;
+    padding: 0 1.5rem;
+    flex-shrink: 0;
   }
 
   .bar {
@@ -133,26 +144,28 @@
 
   .bar.active { background: var(--red); opacity: 0.85; }
 
+  /* ── Controles ── */
   .controls {
     width: 100%;
     max-width: 380px;
     padding: 0 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: clamp(0.4rem, 1.5vh, 0.75rem);
+    flex-shrink: 0;
   }
 
   .volume-row {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 1rem 1.2rem;
+    padding: clamp(0.7rem, 2vh, 1rem) 1.2rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
   }
 
-  .vol-icon { font-size: 1rem; flex-shrink: 0; }
+  .vol-icon { font-size: clamp(0.85rem, 3vw, 1rem); flex-shrink: 0; }
 
   input[type=range] {
     flex: 1;
@@ -162,7 +175,7 @@
   }
 
   .vol-val {
-    font-size: 0.78rem;
+    font-size: clamp(0.7rem, 2.5vw, 0.78rem);
     color: var(--sub);
     font-variant-numeric: tabular-nums;
     width: 36px;
@@ -174,14 +187,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.2rem;
+    padding: clamp(0.7rem, 2vh, 1rem) 1.2rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
     cursor: pointer;
     color: var(--sub);
-    font-size: 0.85rem;
-    transition: background 0.15s;
+    font-size: clamp(0.75rem, 3vw, 0.85rem);
     width: 100%;
     text-align: left;
   }
@@ -190,7 +202,7 @@
   .adv-btn-left { display: flex; align-items: center; gap: 10px; }
   .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
-  /* Bottom Sheet */
+  /* ── Bottom Sheet ── */
   .overlay {
     position: fixed;
     inset: 0;
@@ -214,7 +226,7 @@
     border-radius: 22px 22px 0 0;
     border-top: 1px solid var(--border);
     z-index: 101;
-    padding: 0 1.5rem 2.5rem;
+    padding: 0 1.5rem calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
     transform: translateY(100%);
     transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
     max-height: 85dvh;
@@ -228,16 +240,16 @@
     height: 4px;
     background: var(--border);
     border-radius: 2px;
-    margin: 1rem auto 1.5rem;
+    margin: 1rem auto 1.4rem;
   }
 
   .sheet-title {
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.3rem;
   }
 
-  .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem; }
+  .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.1rem; }
 
   .sheet-label {
     font-size: 0.65rem;
@@ -253,8 +265,8 @@
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 12px 36px 12px 14px;
-    font-size: 0.9rem;
+    padding: 11px 36px 11px 14px;
+    font-size: clamp(0.82rem, 3vw, 0.9rem);
     appearance: none;
     -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
@@ -302,15 +314,10 @@
 </header>
 
 <div class="hero">
-  <div>
-    <button class="circle-btn" id="btnMic">
-      <span class="pulse-ring"></span>🎤
-    </button>
-    <p class="btn-label" id="micLabel">Monitorar</p>
-  </div>
-</div>
-
-<div class="status-zone">
+  <button class="circle-btn" id="btnMic">
+    <span class="pulse-ring"></span>🎤
+  </button>
+  <p class="btn-label" id="micLabel">Monitorar</p>
   <p class="status-text" id="status">Toque para começar</p>
 </div>
 
@@ -331,12 +338,8 @@
     <input type="range" id="gain" min="0" max="300" value="100" step="1">
     <span class="vol-val" id="gainVal">100%</span>
   </div>
-
   <button class="adv-btn" id="advBtn">
-    <span class="adv-btn-left">
-      <span>⚙️</span>
-      Avançado
-    </span>
+    <span class="adv-btn-left"><span>⚙️</span> Avançado</span>
     <span class="adv-btn-arrow">›</span>
   </button>
 </div>
@@ -366,21 +369,21 @@ let audioCtx = null, sourceNode = null, gainNode = null;
 let analyser = null, stream = null, animId = null;
 let audioEl = null, running = false;
 
-const btnMic      = document.getElementById('btnMic');
-const micLabel    = document.getElementById('micLabel');
-const statusEl    = document.getElementById('status');
-const gainSlider  = document.getElementById('gain');
-const gainValEl   = document.getElementById('gainVal');
-const inputSel    = document.getElementById('inputSelect');
-const outputSel   = document.getElementById('outputSelect');
-const refreshBtn  = document.getElementById('refreshBtn');
-const advBtn      = document.getElementById('advBtn');
-const overlay     = document.getElementById('overlay');
-const sheet       = document.getElementById('sheet');
-const sheetClose  = document.getElementById('sheetClose');
+const btnMic     = document.getElementById('btnMic');
+const micLabel   = document.getElementById('micLabel');
+const statusEl   = document.getElementById('status');
+const gainSlider = document.getElementById('gain');
+const gainValEl  = document.getElementById('gainVal');
+const inputSel   = document.getElementById('inputSelect');
+const outputSel  = document.getElementById('outputSelect');
+const refreshBtn = document.getElementById('refreshBtn');
+const advBtn     = document.getElementById('advBtn');
+const overlay    = document.getElementById('overlay');
+const sheet      = document.getElementById('sheet');
+const sheetClose = document.getElementById('sheetClose');
 const bars = Array.from({length:15}, (_,i) => document.getElementById('b'+i));
 
-function openSheet() { overlay.classList.add('open'); sheet.classList.add('open'); loadDevices(); }
+function openSheet()  { overlay.classList.add('open'); sheet.classList.add('open'); loadDevices(); }
 function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove('open'); }
 
 advBtn.addEventListener('click', openSheet);
@@ -389,9 +392,7 @@ sheetClose.addEventListener('click', closeSheet);
 
 let touchStartY = 0;
 sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-sheet.addEventListener('touchend', e => {
-  if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet();
-}, { passive: true });
+sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet(); }, { passive: true });
 
 gainSlider.addEventListener('input', () => {
   gainValEl.textContent = gainSlider.value + '%';
