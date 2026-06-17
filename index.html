@@ -2,309 +2,389 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Microfone Bluetooth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mic</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #0a0a0a;
+    --surface:  #141414;
+    --border:   #1e1e1e;
+    --red:      #ff2d2d;
+    --red-dim:  #7a1515;
+    --text:     #f0f0f0;
+    --muted:    #3a3a3a;
+    --subtle:   #222;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0f0f0f;
-    color: #fff;
-    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
+    padding: 0 0 2.5rem;
+    overflow-x: hidden;
   }
 
-  h1 {
-    font-size: 1.4rem;
+  /* ── Header ── */
+  header {
+    width: 100%;
+    padding: 3.5rem 1.5rem 0;
+    text-align: center;
+  }
+
+  .app-name {
+    font-size: 0.7rem;
     font-weight: 600;
-    margin-bottom: 0.3rem;
-    text-align: center;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 
-  .subtitle {
-    font-size: 0.85rem;
-    color: #888;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .buttons-row {
+  /* ── Hero: botões ── */
+  .hero {
+    width: 100%;
     display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    margin-bottom: 1.2rem;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 2.5rem 1.5rem 0;
   }
 
-  .btn-wrap {
+  .btn-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn-label {
-    font-size: 0.72rem;
-    color: #555;
-    text-align: center;
+    gap: 0.65rem;
   }
 
   .circle-btn {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
     border: none;
-    background: #222;
-    color: #fff;
-    font-size: 2.4rem;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, transform 0.1s;
     position: relative;
     outline: none;
-    flex-shrink: 0;
+    transition: transform 0.12s, background 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
-  .circle-btn:active { transform: scale(0.95); }
+  .circle-btn:active { transform: scale(0.93); }
 
-  .circle-btn.active-mic  { background: #e53935; }
-  .circle-btn.active-rec  { background: #b71c1c; }
+  /* Botão principal (monitorar) — maior */
+  .btn-main {
+    width: 128px;
+    height: 128px;
+    font-size: 2.6rem;
+    border: 1.5px solid var(--border);
+  }
 
+  /* Botão secundário (gravar) — menor */
+  .btn-sec {
+    width: 88px;
+    height: 88px;
+    font-size: 1.8rem;
+    border: 1.5px solid var(--border);
+    margin-bottom: 6px; /* alinha visualmente ao centro com o maior */
+  }
+
+  .circle-btn.active-mic { background: var(--red); border-color: var(--red); }
+  .circle-btn.active-rec { background: #8b0000; border-color: #8b0000; }
+
+  /* Anel de pulso */
   .pulse-ring {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    inset: -1px;
     border-radius: 50%;
-    border: 3px solid #e53935;
+    border: 2px solid var(--red);
     opacity: 0;
     pointer-events: none;
   }
 
   .circle-btn.active-mic .pulse-ring,
   .circle-btn.active-rec .pulse-ring {
-    animation: pulse 1.4s ease-out infinite;
+    animation: pulse 1.6s ease-out infinite;
   }
-
-  .circle-btn.active-rec .pulse-ring { border-color: #b71c1c; }
 
   @keyframes pulse {
-    0%   { transform: scale(1);   opacity: 0.6; }
-    100% { transform: scale(1.7); opacity: 0; }
+    0%   { transform: scale(1);    opacity: 0.5; }
+    100% { transform: scale(1.55); opacity: 0; }
   }
 
-  .status {
-    font-size: 0.95rem;
-    color: #aaa;
-    margin-bottom: 0.6rem;
-    min-height: 1.4rem;
-    text-align: center;
+  .btn-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
   }
-  .status.on  { color: #ef9a9a; }
-  .status.err { color: #ff8a65; }
+
+  /* ── Status ── */
+  .status-zone {
+    margin-top: 2rem;
+    text-align: center;
+    min-height: 2.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .status-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+  .status-text.on  { color: #ff6b6b; }
+  .status-text.err { color: #ff9966; }
 
   .rec-timer {
-    font-size: 0.85rem;
-    color: #ef9a9a;
-    min-height: 1.2rem;
-    text-align: center;
-    margin-bottom: 1rem;
+    font-size: 0.78rem;
     font-variant-numeric: tabular-nums;
+    color: var(--red);
+    letter-spacing: 0.05em;
+    min-height: 1rem;
   }
 
+  /* ── Visualizador ── */
   .visualizer {
     display: flex;
     align-items: flex-end;
-    gap: 4px;
-    height: 50px;
-    margin-bottom: 1.8rem;
+    justify-content: center;
+    gap: 3px;
+    height: 48px;
+    margin: 1.8rem 0;
+    padding: 0 1.5rem;
   }
 
   .bar {
-    width: 8px;
-    background: #2a2a2a;
-    border-radius: 4px;
-    min-height: 4px;
-    transition: height 0.05s;
+    flex: 1;
+    max-width: 14px;
+    background: var(--subtle);
+    border-radius: 3px;
+    min-height: 3px;
+    transition: height 0.06s;
   }
-  .bar.active { background: linear-gradient(to top, #e53935, #ef9a9a); }
+
+  .bar.active {
+    background: var(--red);
+    opacity: 0.85;
+  }
+
+  /* ── Controles ── */
+  .controls {
+    width: 100%;
+    max-width: 380px;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
 
   .volume-row {
-    width: 100%;
-    max-width: 340px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 1.2rem;
+    gap: 14px;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 0.75rem;
   }
 
-  .control-label {
-    font-size: 0.8rem;
-    color: #888;
-    width: 60px;
-    flex-shrink: 0;
-  }
+  .vol-icon { font-size: 1rem; flex-shrink: 0; }
 
   input[type=range] {
     flex: 1;
-    accent-color: #e53935;
-    height: 4px;
-  }
-
-  .control-value {
-    font-size: 0.85rem;
-    color: #ccc;
-    width: 40px;
-    text-align: right;
-  }
-
-  .advanced-toggle {
-    background: none;
-    border: 1px solid #333;
-    color: #666;
-    font-size: 0.78rem;
-    padding: 6px 16px;
-    border-radius: 20px;
+    accent-color: var(--red);
+    height: 3px;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
   }
-  .advanced-toggle:hover { border-color: #555; color: #aaa; }
-  .advanced-toggle.open  { border-color: #e53935; color: #e53935; }
 
-  .advanced-panel {
+  .vol-val {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── Botão avançado ── */
+  .adv-toggle {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.6rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     width: 100%;
-    max-width: 340px;
+    transition: color 0.2s;
+  }
+
+  .adv-toggle:active { color: var(--text); }
+  .adv-toggle.open   { color: #ff6b6b; }
+
+  .adv-arrow {
+    display: inline-block;
+    transition: transform 0.25s;
+    font-style: normal;
+  }
+
+  .adv-toggle.open .adv-arrow { transform: rotate(180deg); }
+
+  /* ── Painel avançado ── */
+  .adv-panel {
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s;
     opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease;
   }
-  .advanced-panel.open { max-height: 300px; opacity: 1; margin-top: 1rem; }
 
-  .advanced-inner {
+  .adv-panel.open { max-height: 320px; opacity: 1; }
+
+  .adv-inner {
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1rem;
-    background: #181818;
-    border: 1px solid #2a2a2a;
-    border-radius: 12px;
+    margin-top: 0.4rem;
   }
 
-  .section-label {
-    font-size: 0.7rem;
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .field-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #555;
-    margin-bottom: 0.3rem;
+    color: var(--muted);
   }
 
   select {
     width: 100%;
-    background: #111;
-    color: #fff;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 36px 10px 12px;
     font-size: 0.85rem;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     cursor: pointer;
   }
-  select:focus { outline: none; border-color: #e53935; }
+
+  select:focus { outline: none; border-color: var(--red); }
 
   .refresh-btn {
     background: none;
-    border: 1px solid #2a2a2a;
-    color: #666;
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    padding: 6px 14px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 0.4rem;
+    align-self: flex-start;
+    transition: color 0.2s, border-color 0.2s;
   }
-  .refresh-btn:active { background: #222; }
 
+  .refresh-btn:active { color: var(--text); border-color: #444; }
+
+  /* ── Gravações ── */
   .recordings {
     width: 100%;
-    max-width: 340px;
+    max-width: 380px;
+    padding: 0 1.5rem;
     margin-top: 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
   .rec-item {
-    background: #181818;
-    border: 1px solid #2a2a2a;
-    border-radius: 10px;
-    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.9rem 1.1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 10px;
+    animation: fadeIn 0.3s ease;
   }
 
-  .rec-info {
-    font-size: 0.8rem;
-    color: #aaa;
-    flex: 1;
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  .rec-info { flex: 1; }
+
+  .rec-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
   }
 
-  .rec-info span {
-    display: block;
+  .rec-meta {
     font-size: 0.7rem;
-    color: #555;
+    color: var(--muted);
     margin-top: 2px;
   }
 
   .rec-download {
     background: none;
-    border: 1px solid #333;
-    color: #ef9a9a;
+    border: 1px solid var(--red-dim);
+    color: #ff6b6b;
     font-size: 0.75rem;
-    padding: 5px 12px;
-    border-radius: 8px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 9px;
     cursor: pointer;
-    white-space: nowrap;
     text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
   }
-  .rec-download:active { background: #2a2a2a; }
 
-  .tip {
-    font-size: 0.72rem;
-    color: #444;
-    text-align: center;
-    margin-top: 1.8rem;
-    line-height: 1.6;
-    max-width: 300px;
-  }
+  .rec-download:active { background: var(--red-dim); }
 </style>
 </head>
 <body>
 
-<h1>🎙️ Microfone Bluetooth</h1>
-<p class="subtitle">Monitoramento e gravação de áudio</p>
+<header>
+  <p class="app-name">Microfone</p>
+</header>
 
-<div class="buttons-row">
-  <div class="btn-wrap">
-    <button class="circle-btn" id="btnMic" aria-label="Ligar monitoramento">
+<div class="hero">
+  <div class="btn-group">
+    <button class="circle-btn btn-main" id="btnMic">
       <span class="pulse-ring"></span>
       🎤
     </button>
     <span class="btn-label" id="micLabel">Monitorar</span>
   </div>
 
-  <div class="btn-wrap">
-    <button class="circle-btn" id="btnRec" aria-label="Iniciar gravação">
+  <div class="btn-group">
+    <button class="circle-btn btn-sec" id="btnRec">
       <span class="pulse-ring"></span>
       ⏺
     </button>
@@ -312,8 +392,10 @@
   </div>
 </div>
 
-<p class="status" id="status">Toque para começar</p>
-<p class="rec-timer" id="recTimer"></p>
+<div class="status-zone">
+  <p class="status-text" id="status">Toque para começar</p>
+  <p class="rec-timer" id="recTimer"></p>
+</div>
 
 <div class="visualizer">
   <div class="bar" id="b0"></div><div class="bar" id="b1"></div>
@@ -322,44 +404,44 @@
   <div class="bar" id="b6"></div><div class="bar" id="b7"></div>
   <div class="bar" id="b8"></div><div class="bar" id="b9"></div>
   <div class="bar" id="b10"></div><div class="bar" id="b11"></div>
+  <div class="bar" id="b12"></div><div class="bar" id="b13"></div>
+  <div class="bar" id="b14"></div>
 </div>
 
-<div class="volume-row">
-  <span class="control-label">Volume</span>
-  <input type="range" id="gain" min="0" max="300" value="100" step="1">
-  <span class="control-value" id="gainVal">100%</span>
-</div>
+<div class="controls">
+  <div class="volume-row">
+    <span class="vol-icon">🔈</span>
+    <input type="range" id="gain" min="0" max="300" value="100" step="1">
+    <span class="vol-val" id="gainVal">100%</span>
+  </div>
 
-<button class="advanced-toggle" id="advancedToggle">⚙ Avançado</button>
+  <button class="adv-toggle" id="advToggle">
+    Avançado <i class="adv-arrow">▾</i>
+  </button>
 
-<div class="advanced-panel" id="advancedPanel">
-  <div class="advanced-inner">
-    <div>
-      <p class="section-label">Entrada (microfone)</p>
-      <select id="inputSelect"><option value="">-- Toque em Atualizar --</option></select>
-    </div>
-    <div>
-      <p class="section-label">Saída (fone / caixa)</p>
-      <select id="outputSelect"><option value="">Padrão do sistema</option></select>
-      <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
+  <div class="adv-panel" id="advPanel">
+    <div class="adv-inner">
+      <div class="field">
+        <span class="field-label">Entrada — microfone</span>
+        <select id="inputSelect"><option value="">— Toque em Atualizar —</option></select>
+      </div>
+      <div class="field">
+        <span class="field-label">Saída — fone / caixa</span>
+        <select id="outputSelect"><option value="">Padrão do sistema</option></select>
+        <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="recordings" id="recordings"></div>
 
-<p class="tip">
-  Conecte o fone antes de ligar.<br>
-  Gravações ficam disponíveis para download abaixo.
-</p>
-
 <script>
 let audioCtx = null, sourceNode = null, gainNode = null;
 let analyser = null, stream = null, animId = null;
 let audioEl = null, running = false;
 let mediaRecorder = null, recChunks = [];
-let recInterval = null, recSeconds = 0;
-let recCount = 0;
+let recInterval = null, recSeconds = 0, recCount = 0;
 
 const btnMic      = document.getElementById('btnMic');
 const btnRec      = document.getElementById('btnRec');
@@ -369,18 +451,17 @@ const statusEl    = document.getElementById('status');
 const recTimerEl  = document.getElementById('recTimer');
 const gainSlider  = document.getElementById('gain');
 const gainValEl   = document.getElementById('gainVal');
-const inputSelect = document.getElementById('inputSelect');
-const outputSelect= document.getElementById('outputSelect');
+const inputSel    = document.getElementById('inputSelect');
+const outputSel   = document.getElementById('outputSelect');
 const refreshBtn  = document.getElementById('refreshBtn');
-const advToggle   = document.getElementById('advancedToggle');
-const advPanel    = document.getElementById('advancedPanel');
+const advToggle   = document.getElementById('advToggle');
+const advPanel    = document.getElementById('advPanel');
 const recordingsEl= document.getElementById('recordings');
-const bars = Array.from({length:12}, (_,i) => document.getElementById('b'+i));
+const bars = Array.from({length:15}, (_,i) => document.getElementById('b'+i));
 
 advToggle.addEventListener('click', () => {
   const open = advPanel.classList.toggle('open');
   advToggle.classList.toggle('open', open);
-  advToggle.textContent = open ? '✕ Fechar' : '⚙ Avançado';
   if (open) loadDevices();
 });
 
@@ -398,38 +479,33 @@ async function loadDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const inputs  = devices.filter(d => d.kind === 'audioinput');
     const outputs = devices.filter(d => d.kind === 'audiooutput');
-    const pIn = inputSelect.value, pOut = outputSelect.value;
-    inputSelect.innerHTML = '';
+    const pIn = inputSel.value, pOut = outputSel.value;
+    inputSel.innerHTML = '';
     inputs.forEach((d,i) => {
       const o = document.createElement('option');
-      o.value = d.deviceId;
-      o.textContent = d.label || 'Microfone '+(i+1);
-      inputSelect.appendChild(o);
+      o.value = d.deviceId; o.textContent = d.label || 'Microfone '+(i+1);
+      inputSel.appendChild(o);
     });
-    if (pIn) inputSelect.value = pIn;
-    outputSelect.innerHTML = '<option value="">Padrão do sistema</option>';
+    if (pIn) inputSel.value = pIn;
+    outputSel.innerHTML = '<option value="">Padrão do sistema</option>';
     outputs.forEach((d,i) => {
       const o = document.createElement('option');
-      o.value = d.deviceId;
-      o.textContent = d.label || 'Saída '+(i+1);
-      outputSelect.appendChild(o);
+      o.value = d.deviceId; o.textContent = d.label || 'Saída '+(i+1);
+      outputSel.appendChild(o);
     });
-    if (pOut) outputSelect.value = pOut;
+    if (pOut) outputSel.value = pOut;
   } catch(e) {
-    statusEl.textContent = 'Não foi possível listar dispositivos.';
-    statusEl.className = 'status err';
+    setStatus('Não foi possível listar dispositivos.', 'err');
   }
 }
 
 async function ensureStream() {
   if (stream) return true;
   try {
-    statusEl.textContent = 'Solicitando permissão...';
-    statusEl.className = 'status';
-    const constraints = {
-      audio: inputSelect.value ? { deviceId: { exact: inputSelect.value } } : true
-    };
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    setStatus('Solicitando permissão...', '');
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: inputSel.value ? { deviceId: { exact: inputSel.value } } : true
+    });
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     await audioCtx.resume();
     sourceNode = audioCtx.createMediaStreamSource(stream);
@@ -443,22 +519,15 @@ async function ensureStream() {
     drawBars();
     return true;
   } catch(err) {
-    statusEl.className = 'status err';
-    statusEl.textContent = err.name === 'NotAllowedError'
-      ? 'Permissão negada. Libere o microfone nas configurações.'
-      : 'Erro: ' + err.message;
+    setStatus(err.name === 'NotAllowedError'
+      ? 'Permissão negada — libere o microfone nas configurações.'
+      : 'Erro: ' + err.message, 'err');
     return false;
   }
 }
 
-// — Monitoramento —
 btnMic.addEventListener('click', async () => {
-  if (running) {
-    stopMonitor();
-  } else {
-    if (!await ensureStream()) return;
-    startMonitor();
-  }
+  running ? stopMonitor() : (await ensureStream() && startMonitor());
 });
 
 async function startMonitor() {
@@ -467,18 +536,17 @@ async function startMonitor() {
   audioEl = new Audio();
   audioEl.srcObject = dest.stream;
   audioEl.muted = false;
-  if (outputSelect.value && typeof audioEl.setSinkId === 'function') {
-    try { await audioEl.setSinkId(outputSelect.value); } catch(e) {}
+  if (outputSel.value && typeof audioEl.setSinkId === 'function') {
+    try { await audioEl.setSinkId(outputSel.value); } catch(e) {}
   }
   await audioEl.play();
   gainNode.connect(audioCtx.destination);
   running = true;
   btnMic.classList.add('active-mic');
-  btnMic.innerHTML = '<span class="pulse-ring"></span>⏹️';
+  btnMic.innerHTML = '<span class="pulse-ring"></span>⏹';
   micLabel.textContent = 'Parar';
-  const outLabel = outputSelect.options[outputSelect.selectedIndex]?.text || 'saída padrão';
-  statusEl.textContent = '● ' + outLabel;
-  statusEl.className = 'status on';
+  const out = outputSel.options[outputSel.selectedIndex]?.text || 'saída padrão';
+  setStatus('Monitorando — ' + out, 'on');
 }
 
 function stopMonitor() {
@@ -487,39 +555,29 @@ function stopMonitor() {
   btnMic.classList.remove('active-mic');
   btnMic.innerHTML = '<span class="pulse-ring"></span>🎤';
   micLabel.textContent = 'Monitorar';
-  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-    statusEl.textContent = 'Toque para começar';
-    statusEl.className = 'status';
-    stopStreamIfIdle();
-  }
+  if (!isRecording()) { setStatus('Toque para começar', ''); stopStreamIfIdle(); }
 }
 
-// — Gravação —
 btnRec.addEventListener('click', async () => {
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    stopRecording();
-  } else {
-    if (!await ensureStream()) return;
-    startRecording();
-  }
+  isRecording() ? stopRecording() : (await ensureStream() && startRecording());
 });
+
+function isRecording() {
+  return mediaRecorder && mediaRecorder.state === 'recording';
+}
 
 function startRecording() {
   recChunks = [];
   recCount++;
-  const recNum = recCount;
-
+  const num = recCount;
   const dest = audioCtx.createMediaStreamDestination();
   gainNode.connect(dest);
-
-  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
     ? 'audio/webm;codecs=opus' : 'audio/webm';
-
-  mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
+  mediaRecorder = new MediaRecorder(dest.stream, { mimeType: mime });
   mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
-  mediaRecorder.onstop = () => saveRecording(recNum);
+  mediaRecorder.onstop = () => saveRecording(num);
   mediaRecorder.start(200);
-
   recSeconds = 0;
   recTimerEl.textContent = '⏺ 00:00';
   recInterval = setInterval(() => {
@@ -528,12 +586,10 @@ function startRecording() {
     const s = String(recSeconds%60).padStart(2,'0');
     recTimerEl.textContent = '⏺ ' + m + ':' + s;
   }, 1000);
-
   btnRec.classList.add('active-rec');
-  btnRec.innerHTML = '<span class="pulse-ring"></span>⏹️';
+  btnRec.innerHTML = '<span class="pulse-ring"></span>⏹';
   recLabel.textContent = 'Parar';
-  statusEl.textContent = 'Gravando...';
-  statusEl.className = 'status on';
+  setStatus('Gravando...', 'on');
 }
 
 function stopRecording() {
@@ -544,28 +600,21 @@ function stopRecording() {
   btnRec.innerHTML = '<span class="pulse-ring"></span>⏺';
   recLabel.textContent = 'Gravar';
   recTimerEl.textContent = '';
-  if (!running) {
-    statusEl.textContent = 'Toque para começar';
-    statusEl.className = 'status';
-    stopStreamIfIdle();
-  }
+  if (!running) { setStatus('Toque para começar', ''); stopStreamIfIdle(); }
 }
 
 function saveRecording(num) {
   const blob = new Blob(recChunks, { type: 'audio/webm' });
-  const url  = URL.createObjectURL(blob);
-  const now  = new Date();
-  const ts   = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  const dur  = recSeconds;
-  const m = String(Math.floor(dur/60)).padStart(2,'0');
-  const s = String(dur%60).padStart(2,'0');
-
+  const url = URL.createObjectURL(blob);
+  const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+  const s = String(recSeconds%60).padStart(2,'0');
+  const ts = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
   const item = document.createElement('div');
   item.className = 'rec-item';
   item.innerHTML = `
     <div class="rec-info">
-      Gravação ${num}
-      <span>${ts} · ${m}:${s}</span>
+      <div class="rec-name">Gravação ${num}</div>
+      <div class="rec-meta">${ts} · ${m}:${s}</div>
     </div>
     <a class="rec-download" href="${url}" download="gravacao-${num}.webm">⬇ Baixar</a>
   `;
@@ -573,15 +622,17 @@ function saveRecording(num) {
 }
 
 function stopStreamIfIdle() {
-  const recActive = mediaRecorder && mediaRecorder.state === 'recording';
-  if (!running && !recActive) {
-    if (animId) cancelAnimationFrame(animId);
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    if (audioCtx) audioCtx.close();
-    stream = null; audioCtx = null; sourceNode = null;
-    gainNode = null; analyser = null;
-    bars.forEach(b => { b.classList.remove('active'); b.style.height = '4px'; });
-  }
+  if (running || isRecording()) return;
+  if (animId) cancelAnimationFrame(animId);
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  if (audioCtx) audioCtx.close();
+  stream = null; audioCtx = null; sourceNode = null; gainNode = null; analyser = null;
+  bars.forEach(b => { b.classList.remove('active'); b.style.height = '3px'; });
+}
+
+function setStatus(text, cls) {
+  statusEl.textContent = text;
+  statusEl.className = 'status-text' + (cls ? ' ' + cls : '');
 }
 
 function drawBars() {
@@ -590,7 +641,7 @@ function drawBars() {
   analyser.getByteFrequencyData(data);
   const step = Math.floor(data.length / bars.length);
   bars.forEach((bar, i) => {
-    const h = Math.max(4, Math.round((data[i * step] / 255) * 46));
+    const h = Math.max(3, Math.round((data[i * step] / 255) * 45));
     bar.style.height = h + 'px';
   });
   animId = requestAnimationFrame(drawBars);
