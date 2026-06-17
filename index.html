@@ -18,35 +18,52 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  html, body {
-    height: 100%;
-    height: 100dvh;
-  }
+  html, body { height: 100%; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Card centrado no desktop, tela cheia no mobile ── */
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: env(safe-area-inset-top, 1rem) 0 env(safe-area-inset-bottom, 1rem);
-    overflow: hidden;
+    padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(1.5rem, 4vh, 3rem);
+  }
+
+  /* No desktop: vira um card flutuante */
+  @media (min-width: 600px) and (min-height: 500px) {
+    body { background: #050505; }
+
+    .app {
+      min-height: auto;
+      height: auto;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(2rem, 4vh, 3.5rem) 2.5rem clamp(1.5rem, 3vh, 2.5rem);
+      gap: clamp(1rem, 3vh, 2rem);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
   }
 
   /* ── Header ── */
-  header {
-    width: 100%;
-    padding: clamp(0.8rem, 4vw, 1.5rem) 1.5rem 0;
-    text-align: center;
-    flex-shrink: 0;
-  }
+  header { width: 100%; text-align: center; flex-shrink: 0; }
 
   .app-name {
-    font-size: clamp(0.6rem, 2vw, 0.68rem);
+    font-size: 0.65rem;
     font-weight: 600;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--muted);
   }
@@ -58,32 +75,43 @@
     align-items: center;
     justify-content: center;
     flex: 1;
+    gap: clamp(0.6rem, 2vh, 1rem);
     width: 100%;
-    gap: clamp(0.5rem, 2vh, 0.9rem);
+  }
+
+  @media (min-width: 600px) {
+    .hero { flex: none; }
   }
 
   .circle-btn {
-    width: clamp(100px, 36vw, 160px);
-    height: clamp(100px, 36vw, 160px);
+    width: clamp(110px, 28vw, 160px);
+    height: clamp(110px, 28vw, 160px);
     border-radius: 50%;
     border: 1.5px solid var(--border);
     background: var(--surface);
     color: var(--text);
-    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     outline: none;
-    transition: transform 0.12s, background 0.2s;
+    transition: transform 0.12s, background 0.2s, box-shadow 0.2s;
     -webkit-user-select: none;
     user-select: none;
     flex-shrink: 0;
   }
 
+  /* No desktop o botão tem tamanho fixo */
+  @media (min-width: 600px) {
+    .circle-btn { width: 150px; height: 150px; font-size: 3rem; }
+  }
+
+  .circle-btn:hover { box-shadow: 0 0 0 6px rgba(255,45,45,0.08); }
   .circle-btn:active { transform: scale(0.93); }
   .circle-btn.active-mic { background: var(--red); border-color: var(--red); }
+  .circle-btn.active-mic:hover { box-shadow: 0 0 0 8px rgba(255,45,45,0.15); }
 
   .pulse-ring {
     position: absolute;
@@ -102,24 +130,23 @@
   }
 
   .btn-label {
-    font-size: clamp(0.6rem, 2.5vw, 0.7rem);
+    font-size: 0.68rem;
     font-weight: 500;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted);
-    text-align: center;
   }
 
-  /* ── Status ── */
   .status-text {
-    font-size: clamp(0.75rem, 3vw, 0.85rem);
+    font-size: clamp(0.78rem, 2.5vw, 0.85rem);
     color: var(--sub);
     transition: color 0.3s;
     text-align: center;
-    padding: 0 1rem;
+    min-height: 1.2em;
   }
+
   .status-text.on  { color: #ff6b6b; }
-  .status-text.err { color: #ff9966; }
+  .status-text.err { color: #ff9966; font-size: 0.78rem; }
 
   /* ── Visualizador ── */
   .visualizer {
@@ -127,10 +154,14 @@
     align-items: flex-end;
     justify-content: center;
     gap: 3px;
-    height: clamp(32px, 8vh, 52px);
+    height: clamp(32px, 7vh, 52px);
     width: 100%;
-    padding: 0 1.5rem;
     flex-shrink: 0;
+    margin-bottom: clamp(0.6rem, 2vh, 1.2rem);
+  }
+
+  @media (min-width: 600px) {
+    .visualizer { height: 44px; margin-bottom: 0; }
   }
 
   .bar {
@@ -147,8 +178,6 @@
   /* ── Controles ── */
   .controls {
     width: 100%;
-    max-width: 380px;
-    padding: 0 1.5rem;
     display: flex;
     flex-direction: column;
     gap: clamp(0.4rem, 1.5vh, 0.75rem);
@@ -165,7 +194,7 @@
     border-radius: 14px;
   }
 
-  .vol-icon { font-size: clamp(0.85rem, 3vw, 1rem); flex-shrink: 0; }
+  .vol-icon { font-size: 0.95rem; flex-shrink: 0; }
 
   input[type=range] {
     flex: 1;
@@ -175,7 +204,7 @@
   }
 
   .vol-val {
-    font-size: clamp(0.7rem, 2.5vw, 0.78rem);
+    font-size: 0.75rem;
     color: var(--sub);
     font-variant-numeric: tabular-nums;
     width: 36px;
@@ -193,22 +222,24 @@
     border-radius: 14px;
     cursor: pointer;
     color: var(--sub);
-    font-size: clamp(0.75rem, 3vw, 0.85rem);
+    font-size: 0.85rem;
     width: 100%;
     text-align: left;
+    transition: background 0.15s;
   }
 
+  .adv-btn:hover  { background: #1a1a1a; }
   .adv-btn:active { background: #1c1c1c; }
   .adv-btn-left { display: flex; align-items: center; gap: 10px; }
   .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
-  /* ── Bottom Sheet ── */
+  /* ── Bottom Sheet (mobile) / Modal centrado (desktop) ── */
   .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: 100;
     opacity: 0;
     pointer-events: none;
@@ -235,6 +266,31 @@
 
   .sheet.open { transform: translateY(0); }
 
+  /* Desktop: modal centrado */
+  @media (min-width: 600px) {
+    .sheet {
+      bottom: auto;
+      left: 50%;
+      right: auto;
+      top: 50%;
+      width: 380px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      max-height: 90vh;
+      transform: translate(-50%, -40%) scale(0.96);
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
+      padding: 0 1.8rem 1.8rem;
+    }
+
+    .sheet.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    .sheet-handle { display: none; }
+  }
+
   .sheet-handle {
     width: 36px;
     height: 4px;
@@ -244,9 +300,10 @@
   }
 
   .sheet-title {
-    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1.3rem;
+    padding-top: 1.5rem;
   }
 
   .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.1rem; }
@@ -266,13 +323,14 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 11px 36px 11px 14px;
-    font-size: clamp(0.82rem, 3vw, 0.9rem);
+    font-size: 0.88rem;
     appearance: none;
     -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     cursor: pointer;
+    transition: border-color 0.2s;
   }
 
   .sheet select:focus { outline: none; border-color: var(--red); }
@@ -287,8 +345,10 @@
     cursor: pointer;
     width: 100%;
     margin-top: 0.4rem;
+    transition: background 0.15s, color 0.15s;
   }
 
+  .sheet-refresh:hover  { background: #1a1a1a; color: var(--text); }
   .sheet-refresh:active { background: #222; }
 
   .sheet-close {
@@ -302,46 +362,52 @@
     cursor: pointer;
     width: 100%;
     margin-top: 1rem;
+    transition: background 0.15s;
   }
 
-  .sheet-close:active { background: #2a2a2a; }
+  .sheet-close:hover  { background: #2a2a2a; }
+  .sheet-close:active { background: #333; }
 </style>
 </head>
 <body>
 
-<header>
-  <p class="app-name">Microfone</p>
-</header>
+<div class="app">
 
-<div class="hero">
-  <button class="circle-btn" id="btnMic">
-    <span class="pulse-ring"></span>🎤
-  </button>
-  <p class="btn-label" id="micLabel">Monitorar</p>
-  <p class="status-text" id="status">Toque para começar</p>
-</div>
+  <header>
+    <p class="app-name">Microfone</p>
+  </header>
 
-<div class="visualizer">
-  <div class="bar" id="b0"></div><div class="bar" id="b1"></div>
-  <div class="bar" id="b2"></div><div class="bar" id="b3"></div>
-  <div class="bar" id="b4"></div><div class="bar" id="b5"></div>
-  <div class="bar" id="b6"></div><div class="bar" id="b7"></div>
-  <div class="bar" id="b8"></div><div class="bar" id="b9"></div>
-  <div class="bar" id="b10"></div><div class="bar" id="b11"></div>
-  <div class="bar" id="b12"></div><div class="bar" id="b13"></div>
-  <div class="bar" id="b14"></div>
-</div>
-
-<div class="controls">
-  <div class="volume-row">
-    <span class="vol-icon">🔈</span>
-    <input type="range" id="gain" min="0" max="300" value="100" step="1">
-    <span class="vol-val" id="gainVal">100%</span>
+  <div class="hero">
+    <button class="circle-btn" id="btnMic">
+      <span class="pulse-ring"></span>🎤
+    </button>
+    <p class="btn-label" id="micLabel">Monitorar</p>
+    <p class="status-text" id="status">Toque para começar</p>
   </div>
-  <button class="adv-btn" id="advBtn">
-    <span class="adv-btn-left"><span>⚙️</span> Avançado</span>
-    <span class="adv-btn-arrow">›</span>
-  </button>
+
+  <div class="visualizer">
+    <div class="bar" id="b0"></div><div class="bar" id="b1"></div>
+    <div class="bar" id="b2"></div><div class="bar" id="b3"></div>
+    <div class="bar" id="b4"></div><div class="bar" id="b5"></div>
+    <div class="bar" id="b6"></div><div class="bar" id="b7"></div>
+    <div class="bar" id="b8"></div><div class="bar" id="b9"></div>
+    <div class="bar" id="b10"></div><div class="bar" id="b11"></div>
+    <div class="bar" id="b12"></div><div class="bar" id="b13"></div>
+    <div class="bar" id="b14"></div>
+  </div>
+
+  <div class="controls">
+    <div class="volume-row">
+      <span class="vol-icon">🔈</span>
+      <input type="range" id="gain" min="0" max="300" value="100" step="1">
+      <span class="vol-val" id="gainVal">100%</span>
+    </div>
+    <button class="adv-btn" id="advBtn">
+      <span class="adv-btn-left"><span>⚙️</span> Avançado</span>
+      <span class="adv-btn-arrow">›</span>
+    </button>
+  </div>
+
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -389,6 +455,8 @@ function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove
 advBtn.addEventListener('click', openSheet);
 overlay.addEventListener('click', closeSheet);
 sheetClose.addEventListener('click', closeSheet);
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 let touchStartY = 0;
 sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
