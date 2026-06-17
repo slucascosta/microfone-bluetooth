@@ -614,7 +614,7 @@ async function ensureStream() {
     stream = await navigator.mediaDevices.getUserMedia({
       audio: inputSel.value ? { deviceId: { exact: inputSel.value } } : true
     });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive', sampleRate: 44100 });
     await audioCtx.resume();
     sourceNode = audioCtx.createMediaStreamSource(stream);
     bars.forEach(b => b.classList.add('active'));
