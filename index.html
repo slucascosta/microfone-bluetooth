@@ -6,14 +6,15 @@
 <title>Mic</title>
 <style>
   :root {
-    --bg:       #0a0a0a;
-    --surface:  #141414;
-    --border:   #1e1e1e;
-    --red:      #ff2d2d;
-    --red-dim:  #7a1515;
-    --text:     #f0f0f0;
-    --muted:    #3a3a3a;
-    --subtle:   #222;
+    --bg:      #0a0a0a;
+    --surface: #141414;
+    --sheet:   #181818;
+    --border:  #1e1e1e;
+    --red:     #ff2d2d;
+    --red-dim: #7a1515;
+    --text:    #f0f0f0;
+    --muted:   #3a3a3a;
+    --sub:     #606060;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +27,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 0 2.5rem;
+    padding-bottom: 3rem;
     overflow-x: hidden;
   }
 
@@ -38,21 +39,21 @@
   }
 
   .app-name {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
-  /* ── Hero: botões ── */
+  /* ── Hero ── */
   .hero {
-    width: 100%;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     gap: 1.4rem;
     padding: 2.5rem 1.5rem 0;
+    width: 100%;
   }
 
   .btn-group {
@@ -76,31 +77,16 @@
     transition: transform 0.12s, background 0.2s;
     -webkit-user-select: none;
     user-select: none;
+    border: 1.5px solid var(--border);
   }
 
   .circle-btn:active { transform: scale(0.93); }
-
-  /* Botão principal (monitorar) — maior */
-  .btn-main {
-    width: 128px;
-    height: 128px;
-    font-size: 2.6rem;
-    border: 1.5px solid var(--border);
-  }
-
-  /* Botão secundário (gravar) — menor */
-  .btn-sec {
-    width: 88px;
-    height: 88px;
-    font-size: 1.8rem;
-    border: 1.5px solid var(--border);
-    margin-bottom: 6px; /* alinha visualmente ao centro com o maior */
-  }
+  .btn-main { width: 128px; height: 128px; font-size: 2.6rem; }
+  .btn-sec  { width: 88px;  height: 88px;  font-size: 1.8rem; margin-bottom: 6px; }
 
   .circle-btn.active-mic { background: var(--red); border-color: var(--red); }
   .circle-btn.active-rec { background: #8b0000; border-color: #8b0000; }
 
-  /* Anel de pulso */
   .pulse-ring {
     position: absolute;
     inset: -1px;
@@ -111,21 +97,19 @@
   }
 
   .circle-btn.active-mic .pulse-ring,
-  .circle-btn.active-rec .pulse-ring {
-    animation: pulse 1.6s ease-out infinite;
-  }
+  .circle-btn.active-rec .pulse-ring { animation: pulse 1.6s ease-out infinite; }
 
   @keyframes pulse {
     0%   { transform: scale(1);    opacity: 0.5; }
-    100% { transform: scale(1.55); opacity: 0; }
+    100% { transform: scale(1.55); opacity: 0;   }
   }
 
   .btn-label {
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.06em;
-    color: var(--muted);
     text-transform: uppercase;
+    color: var(--muted);
   }
 
   /* ── Status ── */
@@ -139,11 +123,7 @@
     gap: 0.3rem;
   }
 
-  .status-text {
-    font-size: 0.85rem;
-    color: var(--muted);
-    transition: color 0.3s;
-  }
+  .status-text { font-size: 0.85rem; color: var(--sub); transition: color 0.3s; }
   .status-text.on  { color: #ff6b6b; }
   .status-text.err { color: #ff9966; }
 
@@ -164,21 +144,19 @@
     height: 48px;
     margin: 1.8rem 0;
     padding: 0 1.5rem;
+    width: 100%;
   }
 
   .bar {
     flex: 1;
     max-width: 14px;
-    background: var(--subtle);
+    background: #1c1c1c;
     border-radius: 3px;
     min-height: 3px;
     transition: height 0.06s;
   }
 
-  .bar.active {
-    background: var(--red);
-    opacity: 0.85;
-  }
+  .bar.active { background: var(--red); opacity: 0.85; }
 
   /* ── Controles ── */
   .controls {
@@ -187,7 +165,7 @@
     padding: 0 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0.75rem;
   }
 
   .volume-row {
@@ -198,7 +176,6 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
-    margin-bottom: 0.75rem;
   }
 
   .vol-icon { font-size: 1rem; flex-shrink: 0; }
@@ -212,112 +189,47 @@
 
   .vol-val {
     font-size: 0.78rem;
-    color: var(--muted);
+    color: var(--sub);
     font-variant-numeric: tabular-nums;
     width: 36px;
     text-align: right;
     flex-shrink: 0;
   }
 
-  /* ── Botão avançado ── */
-  .adv-toggle {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 0.6rem 0;
+  .adv-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    transition: color 0.2s;
-  }
-
-  .adv-toggle:active { color: var(--text); }
-  .adv-toggle.open   { color: #ff6b6b; }
-
-  .adv-arrow {
-    display: inline-block;
-    transition: transform 0.25s;
-    font-style: normal;
-  }
-
-  .adv-toggle.open .adv-arrow { transform: rotate(180deg); }
-
-  /* ── Painel avançado ── */
-  .adv-panel {
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transition: max-height 0.35s ease, opacity 0.3s ease;
-  }
-
-  .adv-panel.open { max-height: 320px; opacity: 1; }
-
-  .adv-inner {
+    justify-content: space-between;
     padding: 1rem 1.2rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 0.4rem;
-  }
-
-  .field { display: flex; flex-direction: column; gap: 0.4rem; }
-
-  .field-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  select {
-    width: 100%;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 36px 10px 12px;
+    cursor: pointer;
+    color: var(--sub);
     font-size: 0.85rem;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    cursor: pointer;
+    transition: background 0.15s;
+    width: 100%;
+    text-align: left;
   }
 
-  select:focus { outline: none; border-color: var(--red); }
+  .adv-btn:active { background: #1c1c1c; }
 
-  .refresh-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 0.72rem;
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    align-self: flex-start;
-    transition: color 0.2s, border-color 0.2s;
+  .adv-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
   }
 
-  .refresh-btn:active { color: var(--text); border-color: #444; }
+  .adv-btn-icon { font-size: 1rem; }
+  .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
   /* ── Gravações ── */
   .recordings {
     width: 100%;
     max-width: 380px;
     padding: 0 1.5rem;
-    margin-top: 1.2rem;
+    margin-top: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -337,19 +249,8 @@
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
 
-  .rec-info { flex: 1; }
-
-  .rec-name {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .rec-meta {
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+  .rec-name { font-size: 0.85rem; font-weight: 500; }
+  .rec-meta { font-size: 0.7rem; color: var(--sub); margin-top: 2px; }
 
   .rec-download {
     background: none;
@@ -362,10 +263,118 @@
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
-    transition: background 0.15s;
   }
 
   .rec-download:active { background: var(--red-dim); }
+
+  /* ══════════════════════════════
+     BOTTOM SHEET MODAL
+  ══════════════════════════════ */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--sheet);
+    border-radius: 22px 22px 0 0;
+    border-top: 1px solid var(--border);
+    z-index: 101;
+    padding: 0 1.5rem 2.5rem;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 85dvh;
+    overflow-y: auto;
+  }
+
+  .sheet.open { transform: translateY(0); }
+
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 1rem auto 1.5rem;
+  }
+
+  .sheet-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem; }
+
+  .sheet-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sub);
+  }
+
+  .sheet select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 36px 12px 14px;
+    font-size: 0.9rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+  }
+
+  .sheet select:focus { outline: none; border-color: var(--red); }
+
+  .sheet-refresh {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--sub);
+    font-size: 0.8rem;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0.4rem;
+    transition: background 0.15s;
+  }
+
+  .sheet-refresh:active { background: #222; }
+
+  .sheet-close {
+    background: #222;
+    border: none;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background 0.15s;
+  }
+
+  .sheet-close:active { background: #2a2a2a; }
 </style>
 </head>
 <body>
@@ -377,16 +386,13 @@
 <div class="hero">
   <div class="btn-group">
     <button class="circle-btn btn-main" id="btnMic">
-      <span class="pulse-ring"></span>
-      🎤
+      <span class="pulse-ring"></span>🎤
     </button>
     <span class="btn-label" id="micLabel">Monitorar</span>
   </div>
-
   <div class="btn-group">
     <button class="circle-btn btn-sec" id="btnRec">
-      <span class="pulse-ring"></span>
-      ⏺
+      <span class="pulse-ring"></span>⏺
     </button>
     <span class="btn-label" id="recLabel">Gravar</span>
   </div>
@@ -415,26 +421,37 @@
     <span class="vol-val" id="gainVal">100%</span>
   </div>
 
-  <button class="adv-toggle" id="advToggle">
-    Avançado <i class="adv-arrow">▾</i>
+  <button class="adv-btn" id="advBtn">
+    <span class="adv-btn-left">
+      <span class="adv-btn-icon">⚙️</span>
+      Avançado
+    </span>
+    <span class="adv-btn-arrow">›</span>
   </button>
-
-  <div class="adv-panel" id="advPanel">
-    <div class="adv-inner">
-      <div class="field">
-        <span class="field-label">Entrada — microfone</span>
-        <select id="inputSelect"><option value="">— Toque em Atualizar —</option></select>
-      </div>
-      <div class="field">
-        <span class="field-label">Saída — fone / caixa</span>
-        <select id="outputSelect"><option value="">Padrão do sistema</option></select>
-        <button class="refresh-btn" id="refreshBtn">↺ Atualizar dispositivos</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="recordings" id="recordings"></div>
+
+<!-- Overlay + Bottom Sheet -->
+<div class="overlay" id="overlay"></div>
+
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <p class="sheet-title">Configurações</p>
+
+  <div class="sheet-field">
+    <span class="sheet-label">Entrada — microfone</span>
+    <select id="inputSelect"><option value="">— Toque em Atualizar —</option></select>
+  </div>
+
+  <div class="sheet-field">
+    <span class="sheet-label">Saída — fone / caixa</span>
+    <select id="outputSelect"><option value="">Padrão do sistema</option></select>
+  </div>
+
+  <button class="sheet-refresh" id="refreshBtn">↺ Atualizar dispositivos</button>
+  <button class="sheet-close" id="sheetClose">Fechar</button>
+</div>
 
 <script>
 let audioCtx = null, sourceNode = null, gainNode = null;
@@ -454,16 +471,35 @@ const gainValEl   = document.getElementById('gainVal');
 const inputSel    = document.getElementById('inputSelect');
 const outputSel   = document.getElementById('outputSelect');
 const refreshBtn  = document.getElementById('refreshBtn');
-const advToggle   = document.getElementById('advToggle');
-const advPanel    = document.getElementById('advPanel');
+const advBtn      = document.getElementById('advBtn');
+const overlay     = document.getElementById('overlay');
+const sheet       = document.getElementById('sheet');
+const sheetClose  = document.getElementById('sheetClose');
 const recordingsEl= document.getElementById('recordings');
 const bars = Array.from({length:15}, (_,i) => document.getElementById('b'+i));
 
-advToggle.addEventListener('click', () => {
-  const open = advPanel.classList.toggle('open');
-  advToggle.classList.toggle('open', open);
-  if (open) loadDevices();
-});
+// Sheet open/close
+function openSheet() {
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+  loadDevices();
+}
+
+function closeSheet() {
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+}
+
+advBtn.addEventListener('click', openSheet);
+overlay.addEventListener('click', closeSheet);
+sheetClose.addEventListener('click', closeSheet);
+
+// Fechar arrastando para baixo
+let touchStartY = 0;
+sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+sheet.addEventListener('touchend', e => {
+  if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet();
+}, { passive: true });
 
 gainSlider.addEventListener('input', () => {
   gainValEl.textContent = gainSlider.value + '%';
@@ -612,7 +648,7 @@ function saveRecording(num) {
   const item = document.createElement('div');
   item.className = 'rec-item';
   item.innerHTML = `
-    <div class="rec-info">
+    <div>
       <div class="rec-name">Gravação ${num}</div>
       <div class="rec-meta">${ts} · ${m}:${s}</div>
     </div>
