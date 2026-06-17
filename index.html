@@ -31,7 +31,6 @@
     overflow-x: hidden;
   }
 
-  /* ── Header ── */
   header {
     width: 100%;
     padding: 3.5rem 1.5rem 0;
@@ -46,28 +45,22 @@
     color: var(--muted);
   }
 
-  /* ── Hero ── */
   .hero {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
-    gap: 1.4rem;
-    padding: 2.5rem 1.5rem 0;
+    padding: 3rem 1.5rem 0;
     width: 100%;
   }
 
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.65rem;
-  }
-
   .circle-btn {
-    border: none;
+    width: 148px;
+    height: 148px;
     border-radius: 50%;
+    border: 1.5px solid var(--border);
     background: var(--surface);
     color: var(--text);
+    font-size: 3rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -77,15 +70,10 @@
     transition: transform 0.12s, background 0.2s;
     -webkit-user-select: none;
     user-select: none;
-    border: 1.5px solid var(--border);
   }
 
   .circle-btn:active { transform: scale(0.93); }
-  .btn-main { width: 128px; height: 128px; font-size: 2.6rem; }
-  .btn-sec  { width: 88px;  height: 88px;  font-size: 1.8rem; margin-bottom: 6px; }
-
   .circle-btn.active-mic { background: var(--red); border-color: var(--red); }
-  .circle-btn.active-rec { background: #8b0000; border-color: #8b0000; }
 
   .pulse-ring {
     position: absolute;
@@ -96,8 +84,7 @@
     pointer-events: none;
   }
 
-  .circle-btn.active-mic .pulse-ring,
-  .circle-btn.active-rec .pulse-ring { animation: pulse 1.6s ease-out infinite; }
+  .circle-btn.active-mic .pulse-ring { animation: pulse 1.6s ease-out infinite; }
 
   @keyframes pulse {
     0%   { transform: scale(1);    opacity: 0.5; }
@@ -110,39 +97,27 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
+    margin-top: 0.75rem;
+    text-align: center;
   }
 
-  /* ── Status ── */
   .status-zone {
     margin-top: 2rem;
     text-align: center;
-    min-height: 2.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.3rem;
+    min-height: 1.6rem;
   }
 
   .status-text { font-size: 0.85rem; color: var(--sub); transition: color 0.3s; }
   .status-text.on  { color: #ff6b6b; }
   .status-text.err { color: #ff9966; }
 
-  .rec-timer {
-    font-size: 0.78rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--red);
-    letter-spacing: 0.05em;
-    min-height: 1rem;
-  }
-
-  /* ── Visualizador ── */
   .visualizer {
     display: flex;
     align-items: flex-end;
     justify-content: center;
     gap: 3px;
     height: 48px;
-    margin: 1.8rem 0;
+    margin: 2rem 0;
     padding: 0 1.5rem;
     width: 100%;
   }
@@ -158,7 +133,6 @@
 
   .bar.active { background: var(--red); opacity: 0.85; }
 
-  /* ── Controles ── */
   .controls {
     width: 100%;
     max-width: 380px;
@@ -213,63 +187,10 @@
   }
 
   .adv-btn:active { background: #1c1c1c; }
-
-  .adv-btn-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-  }
-
-  .adv-btn-icon { font-size: 1rem; }
+  .adv-btn-left { display: flex; align-items: center; gap: 10px; }
   .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
-  /* ── Gravações ── */
-  .recordings {
-    width: 100%;
-    max-width: 380px;
-    padding: 0 1.5rem;
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .rec-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 0.9rem 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
-
-  .rec-name { font-size: 0.85rem; font-weight: 500; }
-  .rec-meta { font-size: 0.7rem; color: var(--sub); margin-top: 2px; }
-
-  .rec-download {
-    background: none;
-    border: 1px solid var(--red-dim);
-    color: #ff6b6b;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 7px 14px;
-    border-radius: 9px;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .rec-download:active { background: var(--red-dim); }
-
-  /* ══════════════════════════════
-     BOTTOM SHEET MODAL
-  ══════════════════════════════ */
+  /* Bottom Sheet */
   .overlay {
     position: fixed;
     inset: 0;
@@ -314,7 +235,6 @@
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: var(--text);
   }
 
   .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem; }
@@ -355,7 +275,6 @@
     cursor: pointer;
     width: 100%;
     margin-top: 0.4rem;
-    transition: background 0.15s;
   }
 
   .sheet-refresh:active { background: #222; }
@@ -371,7 +290,6 @@
     cursor: pointer;
     width: 100%;
     margin-top: 1rem;
-    transition: background 0.15s;
   }
 
   .sheet-close:active { background: #2a2a2a; }
@@ -384,23 +302,16 @@
 </header>
 
 <div class="hero">
-  <div class="btn-group">
-    <button class="circle-btn btn-main" id="btnMic">
+  <div>
+    <button class="circle-btn" id="btnMic">
       <span class="pulse-ring"></span>🎤
     </button>
-    <span class="btn-label" id="micLabel">Monitorar</span>
-  </div>
-  <div class="btn-group">
-    <button class="circle-btn btn-sec" id="btnRec">
-      <span class="pulse-ring"></span>⏺
-    </button>
-    <span class="btn-label" id="recLabel">Gravar</span>
+    <p class="btn-label" id="micLabel">Monitorar</p>
   </div>
 </div>
 
 <div class="status-zone">
   <p class="status-text" id="status">Toque para começar</p>
-  <p class="rec-timer" id="recTimer"></p>
 </div>
 
 <div class="visualizer">
@@ -423,16 +334,13 @@
 
   <button class="adv-btn" id="advBtn">
     <span class="adv-btn-left">
-      <span class="adv-btn-icon">⚙️</span>
+      <span>⚙️</span>
       Avançado
     </span>
     <span class="adv-btn-arrow">›</span>
   </button>
 </div>
 
-<div class="recordings" id="recordings"></div>
-
-<!-- Overlay + Bottom Sheet -->
 <div class="overlay" id="overlay"></div>
 
 <div class="sheet" id="sheet">
@@ -457,15 +365,10 @@
 let audioCtx = null, sourceNode = null, gainNode = null;
 let analyser = null, stream = null, animId = null;
 let audioEl = null, running = false;
-let mediaRecorder = null, recChunks = [];
-let recInterval = null, recSeconds = 0, recCount = 0;
 
 const btnMic      = document.getElementById('btnMic');
-const btnRec      = document.getElementById('btnRec');
 const micLabel    = document.getElementById('micLabel');
-const recLabel    = document.getElementById('recLabel');
 const statusEl    = document.getElementById('status');
-const recTimerEl  = document.getElementById('recTimer');
 const gainSlider  = document.getElementById('gain');
 const gainValEl   = document.getElementById('gainVal');
 const inputSel    = document.getElementById('inputSelect');
@@ -475,26 +378,15 @@ const advBtn      = document.getElementById('advBtn');
 const overlay     = document.getElementById('overlay');
 const sheet       = document.getElementById('sheet');
 const sheetClose  = document.getElementById('sheetClose');
-const recordingsEl= document.getElementById('recordings');
 const bars = Array.from({length:15}, (_,i) => document.getElementById('b'+i));
 
-// Sheet open/close
-function openSheet() {
-  overlay.classList.add('open');
-  sheet.classList.add('open');
-  loadDevices();
-}
-
-function closeSheet() {
-  overlay.classList.remove('open');
-  sheet.classList.remove('open');
-}
+function openSheet() { overlay.classList.add('open'); sheet.classList.add('open'); loadDevices(); }
+function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove('open'); }
 
 advBtn.addEventListener('click', openSheet);
 overlay.addEventListener('click', closeSheet);
 sheetClose.addEventListener('click', closeSheet);
 
-// Fechar arrastando para baixo
 let touchStartY = 0;
 sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
 sheet.addEventListener('touchend', e => {
@@ -535,6 +427,10 @@ async function loadDevices() {
   }
 }
 
+btnMic.addEventListener('click', async () => {
+  running ? stopMonitor() : (await ensureStream() && startMonitor());
+});
+
 async function ensureStream() {
   if (stream) return true;
   try {
@@ -562,10 +458,6 @@ async function ensureStream() {
   }
 }
 
-btnMic.addEventListener('click', async () => {
-  running ? stopMonitor() : (await ensureStream() && startMonitor());
-});
-
 async function startMonitor() {
   const dest = audioCtx.createMediaStreamDestination();
   gainNode.connect(dest);
@@ -587,83 +479,16 @@ async function startMonitor() {
 
 function stopMonitor() {
   if (audioEl) { audioEl.pause(); audioEl.srcObject = null; audioEl = null; }
-  running = false;
-  btnMic.classList.remove('active-mic');
-  btnMic.innerHTML = '<span class="pulse-ring"></span>🎤';
-  micLabel.textContent = 'Monitorar';
-  if (!isRecording()) { setStatus('Toque para começar', ''); stopStreamIfIdle(); }
-}
-
-btnRec.addEventListener('click', async () => {
-  isRecording() ? stopRecording() : (await ensureStream() && startRecording());
-});
-
-function isRecording() {
-  return mediaRecorder && mediaRecorder.state === 'recording';
-}
-
-function startRecording() {
-  recChunks = [];
-  recCount++;
-  const num = recCount;
-  const dest = audioCtx.createMediaStreamDestination();
-  gainNode.connect(dest);
-  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-    ? 'audio/webm;codecs=opus' : 'audio/webm';
-  mediaRecorder = new MediaRecorder(dest.stream, { mimeType: mime });
-  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
-  mediaRecorder.onstop = () => saveRecording(num);
-  mediaRecorder.start(200);
-  recSeconds = 0;
-  recTimerEl.textContent = '⏺ 00:00';
-  recInterval = setInterval(() => {
-    recSeconds++;
-    const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
-    const s = String(recSeconds%60).padStart(2,'0');
-    recTimerEl.textContent = '⏺ ' + m + ':' + s;
-  }, 1000);
-  btnRec.classList.add('active-rec');
-  btnRec.innerHTML = '<span class="pulse-ring"></span>⏹';
-  recLabel.textContent = 'Parar';
-  setStatus('Gravando...', 'on');
-}
-
-function stopRecording() {
-  clearInterval(recInterval);
-  mediaRecorder.stop();
-  mediaRecorder = null;
-  btnRec.classList.remove('active-rec');
-  btnRec.innerHTML = '<span class="pulse-ring"></span>⏺';
-  recLabel.textContent = 'Gravar';
-  recTimerEl.textContent = '';
-  if (!running) { setStatus('Toque para começar', ''); stopStreamIfIdle(); }
-}
-
-function saveRecording(num) {
-  const blob = new Blob(recChunks, { type: 'audio/webm' });
-  const url = URL.createObjectURL(blob);
-  const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
-  const s = String(recSeconds%60).padStart(2,'0');
-  const ts = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-  const item = document.createElement('div');
-  item.className = 'rec-item';
-  item.innerHTML = `
-    <div>
-      <div class="rec-name">Gravação ${num}</div>
-      <div class="rec-meta">${ts} · ${m}:${s}</div>
-    </div>
-    <a class="rec-download" href="${url}" download="gravacao-${num}.webm">⬇ Baixar</a>
-  `;
-  recordingsEl.prepend(item);
-}
-
-function stopStreamIfIdle() {
-  if (running || isRecording()) return;
   if (animId) cancelAnimationFrame(animId);
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (audioCtx) audioCtx.close();
   stream = null; audioCtx = null; sourceNode = null; gainNode = null; analyser = null;
+  running = false;
+  btnMic.classList.remove('active-mic');
+  btnMic.innerHTML = '<span class="pulse-ring"></span>🎤';
+  micLabel.textContent = 'Monitorar';
   bars.forEach(b => { b.classList.remove('active'); b.style.height = '3px'; });
+  setStatus('Toque para começar', '');
 }
 
 function setStatus(text, cls) {
