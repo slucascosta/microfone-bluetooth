@@ -1,92 +1,50 @@
-// ── Estado global ──────────────────────────────────────────
-let audioCtx = null, sourceNode = null, gainNode = null;
-let analyser = null, stream = null, animId = null;
-let audioEl = null, running = false;
-let hpFilter = null, compressor = null, gateNode = null, gateGain = null;
-let gateInterval = null;
+import './components/mic-button.js';
+import './components/audio-visualizer.js';
+import './components/volume-control.js';
+import './components/settings-sheet.js';
 
-// ── Elementos DOM ──────────────────────────────────────────
-const btnMic     = document.getElementById('btnMic');
-const micLabel   = document.getElementById('micLabel');
-const statusEl   = document.getElementById('status');
-const gainSlider = document.getElementById('gain');
-const gainValEl  = document.getElementById('gainVal');
-const inputSel   = document.getElementById('inputSelect');
-const outputSel  = document.getElementById('outputSelect');
-const refreshBtn = document.getElementById('refreshBtn');
-const advBtn     = document.getElementById('advBtn');
-const overlay    = document.getElementById('overlay');
-const sheet      = document.getElementById('sheet');
-const sheetClose = document.getElementById('sheetClose');
-const toggleHP   = document.getElementById('toggleHP');
-const toggleGate = document.getElementById('toggleGate');
-const toggleComp = document.getElementById('toggleComp');
-const bars = Array.from({ length: 15 }, (_, i) => document.getElementById('b' + i));
+// ── Elementos ──────────────────────────────────────────────
+const micBtn        = document.getElementById('micBtn');
+const visualizer    = document.getElementById('visualizer');
+const volumeControl = document.getElementById('volumeControl');
+const advBtn        = document.getElementById('advBtn');
+const settingsSheet = document.getElementById('settingsSheet');
+const statusEl      = document.getElementById('status');
+const appVersion    = document.getElementById('appVersion');
 
-// ── Sheet ──────────────────────────────────────────────────
-function openSheet()  { overlay.classList.add('open'); sheet.classList.add('open'); loadDevices(); }
-function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove('open'); }
-
-advBtn.addEventListener('click', openSheet);
-overlay.addEventListener('click', closeSheet);
-sheetClose.addEventListener('click', closeSheet);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
-
-let touchStartY = 0;
-sheet.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-sheet.addEventListener('touchend', e => {
-  if (e.changedTouches[0].clientY - touchStartY > 80) closeSheet();
-}, { passive: true });
-
-// ── Volume ─────────────────────────────────────────────────
-gainSlider.addEventListener('input', () => {
-  gainValEl.textContent = gainSlider.value + '%';
-  if (gainNode) gainNode.gain.value = gainSlider.value / 100;
-});
-
-// ── Toggles ────────────────────────────────────────────────
-[toggleHP, toggleGate, toggleComp].forEach(t => {
-  t.addEventListener('change', () => { if (running) rebuildChain(); });
-});
-
-// ── Dispositivos ───────────────────────────────────────────
-refreshBtn.addEventListener('click', loadDevices);
-
-async function loadDevices() {
-  try {
-    const tmp = await navigator.mediaDevices.getUserMedia({ audio: true });
-    tmp.getTracks().forEach(t => t.stop());
-
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const inputs  = devices.filter(d => d.kind === 'audioinput');
-    const outputs = devices.filter(d => d.kind === 'audiooutput');
-    const pIn = inputSel.value, pOut = outputSel.value;
-
-    inputSel.innerHTML = '';
-    inputs.forEach((d, i) => {
-      const o = document.createElement('option');
-      o.value = d.deviceId;
-      o.textContent = d.label || 'Microfone ' + (i + 1);
-      inputSel.appendChild(o);
-    });
-    if (pIn) inputSel.value = pIn;
-
-    outputSel.innerHTML = '<option value="">Padrão do sistema</option>';
-    outputs.forEach((d, i) => {
-      const o = document.createElement('option');
-      o.value = d.deviceId;
-      o.textContent = d.label || 'Saída ' + (i + 1);
-      outputSel.appendChild(o);
-    });
-    if (pOut) outputSel.value = pOut;
-  } catch (e) {
-    setStatus('Não foi possível listar dispositivos.', 'err');
-  }
+// ── Versão ─────────────────────────────────────────────────
+if (appVersion) {
+  appVersion.textContent = window.APP_VERSION ? 'v' + window.APP_VERSION : '';
 }
 
-// ── Botão principal ────────────────────────────────────────
-btnMic.addEventListener('click', async () => {
+// ── Estado de áudio ────────────────────────────────────────
+let audioCtx    = null;
+let sourceNode  = null;
+let gainNode    = null;
+let analyser    = null;
+let stream      = null;
+let animId      = null;
+let audioEl     = null;
+let running     = false;
+let hpFilter    = null;
+let compressor  = null;
+let gateNode    = null;
+let gateGain    = null;
+let gateInterval = null;
+
+// ── Eventos dos componentes ────────────────────────────────
+micBtn.addEventListener('mic-click', async () => {
   running ? stopMonitor() : (await ensureStream() && startMonitor());
+});
+
+volumeControl.addEventListener('volume-change', (e) => {
+  if (gainNode) gainNode.gain.value = e.detail.value;
+});
+
+advBtn.addEventListener('click', () => settingsSheet.open());
+
+settingsSheet.addEventListener('settings-change', () => {
+  if (running) rebuildChain();
 });
 
 // ── Wake Lock ──────────────────────────────────────────────
@@ -94,20 +52,15 @@ let wakeLock = null;
 
 async function requestWakeLock() {
   if (!('wakeLock' in navigator)) return;
-  try {
-    wakeLock = await navigator.wakeLock.request('screen');
-  } catch (e) {}
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
 }
 
 function releaseWakeLock() {
   if (wakeLock) { wakeLock.release(); wakeLock = null; }
 }
 
-// Reativa se o usuário voltar para o app
 document.addEventListener('visibilitychange', async () => {
-  if (running && document.visibilityState === 'visible') {
-    await requestWakeLock();
-  }
+  if (running && document.visibilityState === 'visible') await requestWakeLock();
 });
 
 // ── Stream do microfone ────────────────────────────────────
@@ -115,8 +68,9 @@ async function ensureStream() {
   if (stream) return true;
   try {
     setStatus('Solicitando permissão...', '');
+    const { inputId } = settingsSheet.getSettings();
     stream = await navigator.mediaDevices.getUserMedia({
-      audio: inputSel.value ? { deviceId: { exact: inputSel.value } } : true
+      audio: inputId ? { deviceId: { exact: inputId } } : true
     });
     audioCtx = new (window.AudioContext || window.webkitAudioContext)({
       latencyHint: 'interactive',
@@ -124,7 +78,7 @@ async function ensureStream() {
     });
     await audioCtx.resume();
     sourceNode = audioCtx.createMediaStreamSource(stream);
-    bars.forEach(b => b.classList.add('active'));
+    visualizer.setActive(true);
     return true;
   } catch (err) {
     setStatus(
@@ -139,8 +93,10 @@ async function ensureStream() {
 
 // ── Cadeia de processamento ────────────────────────────────
 function buildProcessingChain() {
+  const { highpass, gate, compressor: useComp } = settingsSheet.getSettings();
+
   gainNode = audioCtx.createGain();
-  gainNode.gain.value = gainSlider.value / 100;
+  gainNode.gain.value = volumeControl.getValue();
 
   hpFilter = audioCtx.createBiquadFilter();
   hpFilter.type = 'highpass';
@@ -166,12 +122,12 @@ function buildProcessingChain() {
   // source → [hp?] → [gate?] → gain → [comp?] → saída
   let node = sourceNode;
 
-  if (toggleHP.checked) {
+  if (highpass) {
     node.connect(hpFilter);
     node = hpFilter;
   }
 
-  if (toggleGate.checked) {
+  if (gate) {
     node.connect(gateNode);
     node.connect(gateGain);
     node = gateGain;
@@ -181,7 +137,7 @@ function buildProcessingChain() {
   node.connect(gainNode);
   gainNode.connect(analyser);
 
-  if (toggleComp.checked) {
+  if (useComp) {
     gainNode.connect(compressor);
     return compressor;
   }
@@ -219,6 +175,7 @@ function startGate() {
 // ── Iniciar monitoramento ──────────────────────────────────
 async function startMonitor() {
   const outputNode = buildProcessingChain();
+  const { outputId, outputLabel } = settingsSheet.getSettings();
 
   const dest = audioCtx.createMediaStreamDestination();
   outputNode.connect(dest);
@@ -228,19 +185,16 @@ async function startMonitor() {
   audioEl.srcObject = dest.stream;
   audioEl.muted = false;
 
-  if (outputSel.value && typeof audioEl.setSinkId === 'function') {
-    try { await audioEl.setSinkId(outputSel.value); } catch (e) {}
+  if (outputId && typeof audioEl.setSinkId === 'function') {
+    try { await audioEl.setSinkId(outputId); } catch (e) {}
   }
 
   await audioEl.play();
   await requestWakeLock();
-  running = true;
-  btnMic.classList.add('active-mic');
-  btnMic.querySelector('.btn-icon').textContent = '⏹';
-  micLabel.textContent = 'Parar';
 
-  const out = outputSel.options[outputSel.selectedIndex]?.text || 'saída padrão';
-  setStatus('Monitorando — ' + out, 'on');
+  running = true;
+  micBtn.setActive(true);
+  setStatus('Monitorando — ' + outputLabel, 'on');
   drawBars();
 }
 
@@ -260,15 +214,14 @@ function stopMonitor() {
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (audioCtx) audioCtx.close();
 
+  releaseWakeLock();
+
   stream = null; audioCtx = null; sourceNode = null;
   gainNode = null; analyser = null; gateNode = null; gateGain = null;
   running = false;
-  releaseWakeLock();
 
-  btnMic.classList.remove('active-mic');
-  btnMic.querySelector('.btn-icon').textContent = '🎤';
-  micLabel.textContent = 'Monitorar';
-  bars.forEach(b => { b.classList.remove('active'); b.style.height = '3px'; });
+  micBtn.setActive(false);
+  visualizer.setActive(false);
   setStatus('Toque para começar', '');
 }
 
@@ -282,11 +235,7 @@ function drawBars() {
   if (!analyser) return;
   const data = new Uint8Array(analyser.frequencyBinCount);
   analyser.getByteFrequencyData(data);
-  const step = Math.floor(data.length / bars.length);
-  bars.forEach((bar, i) => {
-    const h = Math.max(3, Math.round((data[i * step] / 255) * 45));
-    bar.style.height = h + 'px';
-  });
+  visualizer.update(data);
   animId = requestAnimationFrame(drawBars);
 }
 
@@ -296,10 +245,4 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/microfone-bluetooth/service-worker.js')
       .catch(() => {});
   });
-}
-
-// ── Versão ─────────────────────────────────────────────────
-const versionEl = document.getElementById('appVersion');
-if (versionEl) {
-  versionEl.textContent = window.APP_VERSION ? 'v' + window.APP_VERSION : '';
 }
