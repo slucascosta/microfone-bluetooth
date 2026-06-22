@@ -19,7 +19,7 @@ class AudioVisualizer extends HTMLElement {
           gap: 3px;
           height: clamp(32px, 7vh, 52px);
           width: 100%;
-          margin-bottom: clamp(0.6rem, 2vh, 1.2rem);
+          margin-bottom: clamp(1rem, 3vh, 1.5rem);
         }
 
         @media (min-width: 600px) {
