@@ -11,6 +11,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Microfone</title>
 <style>
+  /* ── Tema global ── */
   :root {
     --bg:      #0a0a0a;
     --surface: #141414;
@@ -35,6 +36,7 @@
     justify-content: center;
   }
 
+  /* ── Layout do app ── */
   .app {
     width: 100%;
     max-width: 420px;
@@ -61,6 +63,7 @@
     }
   }
 
+  /* ── Header ── */
   header { width: 100%; text-align: center; flex-shrink: 0; }
 
   .app-name {
@@ -71,108 +74,32 @@
     color: var(--muted);
   }
 
+  /* ── Hero ── */
   .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex: 1;
-    gap: clamp(0.6rem, 2vh, 1rem);
     width: 100%;
   }
 
   @media (min-width: 600px) { .hero { flex: none; } }
 
-  .circle-btn {
-    width: clamp(110px, 28vw, 160px);
-    height: clamp(110px, 28vw, 160px);
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-size: clamp(2.2rem, 7vw, 3.2rem);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    outline: none;
-    transition: transform 0.12s, background 0.2s, box-shadow 0.2s;
-    -webkit-user-select: none;
-    user-select: none;
-    flex-shrink: 0;
-  }
-
-  .circle-btn * { pointer-events: none; }
-
-  @media (min-width: 600px) {
-    .circle-btn { width: 150px; height: 150px; font-size: 3rem; }
-  }
-
-  .circle-btn:hover { box-shadow: 0 0 0 6px rgba(255,45,45,0.08); }
-  .circle-btn:active { transform: scale(0.93); }
-  .circle-btn.active-mic { background: var(--red); border-color: var(--red); }
-  .circle-btn.active-mic:hover { box-shadow: 0 0 0 8px rgba(255,45,45,0.15); }
-
-  .pulse-ring {
-    position: absolute;
-    inset: -1px;
-    border-radius: 50%;
-    border: 2px solid var(--red);
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .circle-btn.active-mic .pulse-ring { animation: pulse 1.6s ease-out infinite; }
-
-  @keyframes pulse {
-    0%   { transform: scale(1);    opacity: 0.5; }
-    100% { transform: scale(1.55); opacity: 0;   }
-  }
-
-  .btn-label {
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
+  /* ── Status ── */
   .status-text {
     font-size: clamp(0.78rem, 2.5vw, 0.85rem);
     color: var(--sub);
     transition: color 0.3s;
     text-align: center;
     min-height: 1.2em;
+    margin-top: clamp(0.6rem, 2vh, 1rem);
   }
 
   .status-text.on  { color: #ff6b6b; }
   .status-text.err { color: #ff9966; font-size: 0.78rem; }
 
-  .visualizer {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 3px;
-    height: clamp(32px, 7vh, 52px);
-    width: 100%;
-    flex-shrink: 0;
-    margin-bottom: clamp(0.6rem, 2vh, 1.2rem);
-  }
-
-  @media (min-width: 600px) { .visualizer { height: 44px; margin-bottom: 0; } }
-
-  .bar {
-    flex: 1;
-    max-width: 14px;
-    background: #1c1c1c;
-    border-radius: 3px;
-    min-height: 3px;
-    transition: height 0.06s;
-  }
-
-  .bar.active { background: var(--red); opacity: 0.85; }
-
+  /* ── Controles ── */
   .controls {
     width: 100%;
     display: flex;
@@ -181,35 +108,7 @@
     flex-shrink: 0;
   }
 
-  .volume-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: clamp(0.7rem, 2vh, 1rem) 1.2rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-  }
-
-  .vol-icon { font-size: 0.95rem; flex-shrink: 0; pointer-events: none; user-select: none; }
-
-  input[type=range] {
-    flex: 1;
-    accent-color: var(--red);
-    height: 3px;
-    cursor: pointer;
-    padding: 10px 0;
-  }
-
-  .vol-val {
-    font-size: 0.75rem;
-    color: var(--sub);
-    font-variant-numeric: tabular-nums;
-    width: 36px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
+  /* ── Botão avançado ── */
   .adv-btn {
     display: flex;
     align-items: center;
@@ -231,6 +130,7 @@
   .adv-btn-left { display: flex; align-items: center; gap: 10px; }
   .adv-btn-arrow { font-size: 0.75rem; color: var(--muted); }
 
+  /* ── Versão ── */
   .app-version {
     font-size: 0.6rem;
     color: var(--muted);
@@ -238,219 +138,25 @@
     text-align: center;
     margin-top: 0.5rem;
   }
-
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .overlay.open { opacity: 1; pointer-events: all; }
-
-  .sheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--sheet);
-    border-radius: 22px 22px 0 0;
-    border-top: 1px solid var(--border);
-    z-index: 101;
-    padding: 0 1.5rem calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-    transform: translateY(100%);
-    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 85dvh;
-    overflow-y: auto;
-    pointer-events: none;
-  }
-
-  .sheet.open { transform: translateY(0); pointer-events: all; }
-
-  @media (min-width: 600px) {
-    .sheet {
-      bottom: auto;
-      left: 50%;
-      right: auto;
-      top: 50%;
-      width: 380px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      max-height: 90vh;
-      transform: translate(-50%, -40%) scale(0.96);
-      opacity: 0;
-      transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
-      padding: 0 1.8rem 1.8rem;
-    }
-    .sheet.open { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    .sheet-handle { display: none; }
-  }
-
-  .sheet-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 1rem auto 1.4rem;
-  }
-
-  .sheet-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1.3rem;
-    padding-top: 1.5rem;
-  }
-
-  .sheet-section {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 1.2rem 0 0.7rem;
-  }
-
-  .sheet-field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.1rem; }
-
-  .sheet-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--sub);
-  }
-
-  .sheet select {
-    width: 100%;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 11px 36px 11px 14px;
-    font-size: 0.88rem;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23444' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-
-  .sheet select:focus { outline: none; border-color: var(--red); }
-
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.85rem 1rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-  }
-
-  .toggle-info { display: flex; flex-direction: column; gap: 2px; }
-  .toggle-name { font-size: 0.88rem; color: var(--text); }
-  .toggle-desc { font-size: 0.7rem; color: var(--sub); }
-
-  .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
-  .toggle input { display: none; }
-
-  .toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--muted);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .toggle input:checked ~ .toggle-track { background: var(--red); }
-
-  .toggle-thumb {
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 18px; height: 18px;
-    background: #fff;
-    border-radius: 50%;
-    pointer-events: none;
-    transition: left 0.2s;
-  }
-
-  .toggle input:checked ~ .toggle-track .toggle-thumb { left: 21px; }
-
-  .sheet-refresh {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--sub);
-    font-size: 0.8rem;
-    padding: 10px 18px;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 0.4rem;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .sheet-refresh:hover  { background: #1a1a1a; color: var(--text); }
-  .sheet-refresh:active { background: #222; }
-
-  .sheet-close {
-    background: #222;
-    border: none;
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 14px;
-    border-radius: 14px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 1rem;
-    transition: background 0.15s;
-  }
-
-  .sheet-close:hover  { background: #2a2a2a; }
-  .sheet-close:active { background: #333; }
 </style>
 </head>
 <body>
 
 <div class="app">
+
   <header>
     <p class="app-name">Microfone</p>
   </header>
 
   <div class="hero">
-    <button class="circle-btn" id="btnMic">
-      <span class="pulse-ring"></span><span class="btn-icon">🎤</span>
-    </button>
-    <p class="btn-label" id="micLabel">Monitorar</p>
+    <mic-button id="micBtn"></mic-button>
     <p class="status-text" id="status">Toque para começar</p>
   </div>
 
-  <div class="visualizer">
-    <div class="bar" id="b0"></div><div class="bar" id="b1"></div>
-    <div class="bar" id="b2"></div><div class="bar" id="b3"></div>
-    <div class="bar" id="b4"></div><div class="bar" id="b5"></div>
-    <div class="bar" id="b6"></div><div class="bar" id="b7"></div>
-    <div class="bar" id="b8"></div><div class="bar" id="b9"></div>
-    <div class="bar" id="b10"></div><div class="bar" id="b11"></div>
-    <div class="bar" id="b12"></div><div class="bar" id="b13"></div>
-    <div class="bar" id="b14"></div>
-  </div>
+  <audio-visualizer id="visualizer"></audio-visualizer>
 
   <div class="controls">
-    <div class="volume-row">
-      <span class="vol-icon">🔈</span>
-      <input type="range" id="gain" min="0" max="300" value="100" step="1">
-      <span class="vol-val" id="gainVal">100%</span>
-    </div>
+    <volume-control id="volumeControl"></volume-control>
     <button class="adv-btn" id="advBtn">
       <span class="adv-btn-left"><span>⚙️</span> Avançado</span>
       <span class="adv-btn-arrow">›</span>
@@ -458,67 +164,12 @@
   </div>
 
   <p class="app-version" id="appVersion"></p>
+
 </div>
 
-<div class="overlay" id="overlay"></div>
-
-<div class="sheet" id="sheet">
-  <div class="sheet-handle"></div>
-  <p class="sheet-title">Configurações</p>
-
-  <p class="sheet-section">Dispositivos</p>
-
-  <div class="sheet-field">
-    <span class="sheet-label">Entrada — microfone</span>
-    <select id="inputSelect"><option value="">— Toque em Atualizar —</option></select>
-  </div>
-
-  <div class="sheet-field">
-    <span class="sheet-label">Saída — fone / caixa</span>
-    <select id="outputSelect"><option value="">Padrão do sistema</option></select>
-  </div>
-
-  <button class="sheet-refresh" id="refreshBtn">↺ Atualizar dispositivos</button>
-
-  <p class="sheet-section">Redução de loop</p>
-
-  <div class="toggle-row">
-    <div class="toggle-info">
-      <span class="toggle-name">Filtro passa-alta</span>
-      <span class="toggle-desc">Corta graves onde o loop se acumula</span>
-    </div>
-    <label class="toggle">
-      <input type="checkbox" id="toggleHP">
-      <div class="toggle-track"><div class="toggle-thumb"></div></div>
-    </label>
-  </div>
-
-  <div class="toggle-row">
-    <div class="toggle-info">
-      <span class="toggle-name">Gate de ruído</span>
-      <span class="toggle-desc">Bloqueia som abaixo do limiar da voz</span>
-    </div>
-    <label class="toggle">
-      <input type="checkbox" id="toggleGate">
-      <div class="toggle-track"><div class="toggle-thumb"></div></div>
-    </label>
-  </div>
-
-  <div class="toggle-row">
-    <div class="toggle-info">
-      <span class="toggle-name">Compressor</span>
-      <span class="toggle-desc">Limita picos que alimentam o loop</span>
-    </div>
-    <label class="toggle">
-      <input type="checkbox" id="toggleComp">
-      <div class="toggle-track"><div class="toggle-thumb"></div></div>
-    </label>
-  </div>
-
-  <button class="sheet-close" id="sheetClose">Fechar</button>
-</div>
+<settings-sheet id="settingsSheet"></settings-sheet>
 
 <script src="version.js"></script>
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
