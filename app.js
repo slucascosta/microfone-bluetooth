@@ -172,6 +172,27 @@ function startGate() {
   }, 16);
 }
 
+// ── Áudio silencioso (mantém contexto ativo no iOS) ───────
+let silentSource = null;
+
+function startSilentAudio() {
+  if (silentSource || !audioCtx) return;
+  const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
+  silentSource = audioCtx.createBufferSource();
+  silentSource.buffer = buffer;
+  silentSource.loop = true;
+  silentSource.connect(audioCtx.destination);
+  silentSource.start();
+}
+
+function stopSilentAudio() {
+  if (silentSource) {
+    silentSource.stop();
+    silentSource.disconnect();
+    silentSource = null;
+  }
+}
+
 // ── Iniciar monitoramento ──────────────────────────────────
 async function startMonitor() {
   const outputNode = buildProcessingChain();
@@ -191,6 +212,7 @@ async function startMonitor() {
 
   await audioEl.play();
   await requestWakeLock();
+  startSilentAudio();
 
   running = true;
   micBtn.setActive(true);
@@ -215,6 +237,7 @@ function stopMonitor() {
   if (audioCtx) audioCtx.close();
 
   releaseWakeLock();
+  stopSilentAudio();
 
   stream = null; audioCtx = null; sourceNode = null;
   gainNode = null; analyser = null; gateNode = null; gateGain = null;
