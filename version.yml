@@ -1,0 +1,29 @@
+name: Gerar versão automática
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Gerar versão com data e hora
+        run: |
+          VERSION="0.1.${{ github.run_number }}"
+          echo "window.APP_VERSION = '${VERSION}';" > version.js
+          echo "Versão gerada: ${VERSION}"
+
+      - name: Commit da versão
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.js
+          git diff --staged --quiet || git commit -m "chore: v0.1.${{ github.run_number }}"
+          git push
