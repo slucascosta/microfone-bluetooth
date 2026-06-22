@@ -16,8 +16,8 @@ class VolumeControl extends HTMLElement {
           align-items: center;
           gap: 14px;
           padding: clamp(0.7rem, 2vh, 1rem) 1.2rem;
-          background: var(--surface);
-          border: 1px solid var(--border);
+          background: #141414;
+          border: 1px solid #1e1e1e;
           border-radius: 14px;
           width: 100%;
         }
@@ -29,50 +29,60 @@ class VolumeControl extends HTMLElement {
           user-select: none;
         }
 
-        input[type=range] {
+        .slider-wrap {
           flex: 1;
-          accent-color: var(--red);
-          cursor: pointer;
+          position: relative;
           height: 20px;
-          background: transparent;
-          -webkit-appearance: none;
-          appearance: none;
+          display: flex;
+          align-items: center;
         }
 
-        input[type=range]::-webkit-slider-runnable-track {
+        .track {
+          position: absolute;
+          left: 0;
+          right: 0;
           height: 3px;
           background: #2a2a2a;
           border-radius: 2px;
+          pointer-events: none;
         }
 
-        input[type=range]::-webkit-slider-thumb {
-          -webkit-appearance: none;
+        .fill {
+          position: absolute;
+          left: 0;
+          height: 3px;
+          background: #ff2d2d;
+          border-radius: 2px;
+          pointer-events: none;
+          width: 33.3%; /* valor inicial 100/300 */
+        }
+
+        input[type=range] {
+          position: absolute;
+          left: 0;
+          right: 0;
+          width: 100%;
+          margin: 0;
+          opacity: 0;
+          height: 20px;
+          cursor: pointer;
+        }
+
+        .thumb {
+          position: absolute;
           width: 18px;
           height: 18px;
           border-radius: 50%;
           background: #ff2d2d;
-          margin-top: -7.5px;
-          cursor: pointer;
-        }
-
-        input[type=range]::-moz-range-track {
-          height: 3px;
-          background: #2a2a2a;
-          border-radius: 2px;
-        }
-
-        input[type=range]::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: #ff2d2d;
-          border: none;
-          cursor: pointer;
+          pointer-events: none;
+          transform: translateX(-50%);
+          left: 33.3%;
+          box-shadow: 0 0 4px rgba(255,45,45,0.4);
         }
 
         .value {
           font-size: 0.75rem;
-          color: var(--sub);
+          color: #606060;
           font-variant-numeric: tabular-nums;
           width: 36px;
           text-align: right;
@@ -81,12 +91,29 @@ class VolumeControl extends HTMLElement {
       </style>
 
       <span class="icon">🔈</span>
-      <input type="range" id="slider" min="0" max="300" value="100" step="1">
+      <div class="slider-wrap">
+        <div class="track"></div>
+        <div class="fill" id="fill"></div>
+        <div class="thumb" id="thumb"></div>
+        <input type="range" id="slider" min="0" max="300" value="100" step="1">
+      </div>
       <span class="value" id="value">100%</span>
     `;
 
-    this.shadowRoot.getElementById('slider').addEventListener('input', (e) => {
-      this.shadowRoot.getElementById('value').textContent = e.target.value + '%';
+    const slider = this.shadowRoot.getElementById('slider');
+    const fill   = this.shadowRoot.getElementById('fill');
+    const thumb  = this.shadowRoot.getElementById('thumb');
+    const value  = this.shadowRoot.getElementById('value');
+
+    const update = (val) => {
+      const pct = (val / 300) * 100;
+      fill.style.width  = pct + '%';
+      thumb.style.left  = pct + '%';
+      value.textContent = Math.round(val / 3) + '%';
+    };
+
+    slider.addEventListener('input', (e) => {
+      update(e.target.value);
       this.dispatchEvent(new CustomEvent('volume-change', {
         detail: { value: e.target.value / 100 },
         bubbles: true,
