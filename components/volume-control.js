@@ -17,7 +17,7 @@ class VolumeControl extends HTMLElement {
           display: flex;
           align-items: center;
           gap: 14px;
-          padding: 1rem 1.2rem;
+          padding: clamp(0.7rem, 2vh, 1rem) 1.2rem;
           background: #141414;
           border: 1px solid #1e1e1e;
           border-radius: 14px;
