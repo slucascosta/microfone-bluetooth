@@ -89,6 +89,27 @@ btnMic.addEventListener('click', async () => {
   running ? stopMonitor() : (await ensureStream() && startMonitor());
 });
 
+// ── Wake Lock ──────────────────────────────────────────────
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+  } catch (e) {}
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+// Reativa se o usuário voltar para o app
+document.addEventListener('visibilitychange', async () => {
+  if (running && document.visibilityState === 'visible') {
+    await requestWakeLock();
+  }
+});
+
 // ── Stream do microfone ────────────────────────────────────
 async function ensureStream() {
   if (stream) return true;
@@ -212,7 +233,7 @@ async function startMonitor() {
   }
 
   await audioEl.play();
-
+  await requestWakeLock();
   running = true;
   btnMic.classList.add('active-mic');
   btnMic.querySelector('.btn-icon').textContent = '⏹';
@@ -242,6 +263,7 @@ function stopMonitor() {
   stream = null; audioCtx = null; sourceNode = null;
   gainNode = null; analyser = null; gateNode = null; gateGain = null;
   running = false;
+  releaseWakeLock();
 
   btnMic.classList.remove('active-mic');
   btnMic.querySelector('.btn-icon').textContent = '🎤';
