@@ -41,7 +41,7 @@ class VolumeControl extends HTMLElement {
 
         input[type=range]::-webkit-slider-runnable-track {
           height: 3px;
-          background: var(--border);
+          background: #2a2a2a;
           border-radius: 2px;
         }
 
@@ -50,14 +50,14 @@ class VolumeControl extends HTMLElement {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: var(--red);
+          background: #ff2d2d;
           margin-top: -7.5px;
           cursor: pointer;
         }
 
         input[type=range]::-moz-range-track {
           height: 3px;
-          background: var(--border);
+          background: #2a2a2a;
           border-radius: 2px;
         }
 
@@ -65,7 +65,7 @@ class VolumeControl extends HTMLElement {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: var(--red);
+          background: #ff2d2d;
           border: none;
           cursor: pointer;
         }
