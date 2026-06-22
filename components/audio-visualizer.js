@@ -23,7 +23,7 @@ class AudioVisualizer extends HTMLElement {
         }
 
         @media (min-width: 600px) {
-          :host { height: 44px; margin-bottom: 0; }
+          :host { height: 44px; margin-bottom: 1.2rem; }
         }
 
         .bar {
