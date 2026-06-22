@@ -32,9 +32,42 @@ class VolumeControl extends HTMLElement {
         input[type=range] {
           flex: 1;
           accent-color: var(--red);
-          height: 3px;
           cursor: pointer;
-          padding: 10px 0;
+          height: 20px;
+          background: transparent;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+          height: 3px;
+          background: var(--border);
+          border-radius: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: var(--red);
+          margin-top: -7.5px;
+          cursor: pointer;
+        }
+
+        input[type=range]::-moz-range-track {
+          height: 3px;
+          background: var(--border);
+          border-radius: 2px;
+        }
+
+        input[type=range]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: var(--red);
+          border: none;
+          cursor: pointer;
         }
 
         .value {
