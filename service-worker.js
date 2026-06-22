@@ -4,7 +4,6 @@ const ASSETS = [
   '/microfone-bluetooth/index.html',
   '/microfone-bluetooth/app.js',
   '/microfone-bluetooth/manifest.json',
-  '/microfone-bluetooth/version.js',
   '/microfone-bluetooth/components/mic-button.js',
   '/microfone-bluetooth/components/audio-visualizer.js',
   '/microfone-bluetooth/components/volume-control.js',
