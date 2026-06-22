@@ -53,11 +53,12 @@
     .app {
       min-height: auto;
       height: auto;
-      max-width: 640px;
+      min-width: 680px;
+      max-width: 780px;
       width: 80vw;
       border: 1px solid var(--border);
       border-radius: 28px;
-      padding: 4rem 4rem 2.5rem;
+      padding: 4rem 5rem 2.5rem;
       gap: 2.5rem;
       box-shadow: 0 32px 80px rgba(0,0,0,0.6);
       position: relative;
@@ -139,6 +140,10 @@
     letter-spacing: 0.08em;
     text-align: center;
     margin-top: 0.5rem;
+  }
+
+  @media (min-width: 600px) {
+    .app-version { font-size: 0.75rem; }
   }
 </style>
 </head>
