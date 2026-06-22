@@ -297,3 +297,9 @@ if ('serviceWorker' in navigator) {
       .catch(() => {});
   });
 }
+
+// ── Versão ─────────────────────────────────────────────────
+const versionEl = document.getElementById('appVersion');
+if (versionEl) {
+  versionEl.textContent = window.APP_VERSION ? 'v' + window.APP_VERSION : '';
+}
