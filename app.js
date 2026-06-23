@@ -77,6 +77,11 @@ async function ensureStream() {
       sampleRate: 44100
     });
     await audioCtx.resume();
+
+    // Força buffer mínimo possível
+    if (audioCtx.baseLatency !== undefined) {
+      console.log('Latência base:', Math.round(audioCtx.baseLatency * 1000) + 'ms');
+    }
     sourceNode = audioCtx.createMediaStreamSource(stream);
     visualizer.setActive(true);
     return true;
@@ -91,58 +96,60 @@ async function ensureStream() {
   }
 }
 
-// ── Cadeia de processamento ────────────────────────────────
-function buildProcessingChain() {
-  const { highpass, gate, compressor: useComp } = settingsSheet.getSettings();
-
+// ── Filtros individuais (recebem e retornam nó) ────────────
+function applyGain(node) {
   gainNode = audioCtx.createGain();
   gainNode.gain.value = volumeControl.getValue();
+  node.connect(gainNode);
+  return gainNode;
+}
 
+function applyHighpass(node) {
   hpFilter = audioCtx.createBiquadFilter();
   hpFilter.type = 'highpass';
   hpFilter.frequency.value = 120;
   hpFilter.Q.value = 0.7;
+  node.connect(hpFilter);
+  return hpFilter;
+}
 
+function applyGate(node) {
+  gateNode = audioCtx.createAnalyser();
+  gateNode.fftSize = 256;
+  gateGain = audioCtx.createGain();
+  gateGain.gain.value = 1;
+  node.connect(gateNode);
+  node.connect(gateGain);
+  startGate();
+  return gateGain;
+}
+
+function applyCompressor(node) {
   compressor = audioCtx.createDynamicsCompressor();
   compressor.threshold.value = -24;
   compressor.knee.value = 6;
   compressor.ratio.value = 8;
   compressor.attack.value = 0.003;
   compressor.release.value = 0.15;
+  node.connect(compressor);
+  return compressor;
+}
 
-  gateGain = audioCtx.createGain();
-  gateGain.gain.value = 1;
-
-  gateNode = audioCtx.createAnalyser();
-  gateNode.fftSize = 256;
+// ── Cadeia de processamento ────────────────────────────────
+function buildProcessingChain() {
+  const { highpass, gate, compressor: useComp } = settingsSheet.getSettings();
 
   analyser = audioCtx.createAnalyser();
   analyser.fftSize = 64;
 
-  // source → [hp?] → [gate?] → gain → [comp?] → saída
   let node = sourceNode;
-
-  if (highpass) {
-    node.connect(hpFilter);
-    node = hpFilter;
-  }
-
-  if (gate) {
-    node.connect(gateNode);
-    node.connect(gateGain);
-    node = gateGain;
-    startGate();
-  }
-
-  node.connect(gainNode);
+  if (highpass) node = applyHighpass(node);
+  if (gate)     node = applyGate(node);
+  node = applyGain(node);
   gainNode.connect(analyser);
+  if (useComp)  node = applyCompressor(gainNode);
 
-  if (useComp) {
-    gainNode.connect(compressor);
-    return compressor;
-  }
-
-  return gainNode;
+  return node;
 }
 
 // ── Gate de ruído ──────────────────────────────────────────
@@ -198,19 +205,22 @@ async function startMonitor() {
   const outputNode = buildProcessingChain();
   const { outputId, outputLabel } = settingsSheet.getSettings();
 
-  const dest = audioCtx.createMediaStreamDestination();
-  outputNode.connect(dest);
-  outputNode.connect(audioCtx.destination);
+  // Se há saída específica selecionada, usa setSinkId via Audio element
+  // Senão, conecta direto no audioCtx.destination — menor latência
+  if (outputId && typeof HTMLAudioElement.prototype.setSinkId === 'function') {
+    const dest = audioCtx.createMediaStreamDestination();
+    outputNode.connect(dest);
 
-  audioEl = new Audio();
-  audioEl.srcObject = dest.stream;
-  audioEl.muted = false;
-
-  if (outputId && typeof audioEl.setSinkId === 'function') {
+    audioEl = new Audio();
+    audioEl.srcObject = dest.stream;
+    audioEl.muted = false;
     try { await audioEl.setSinkId(outputId); } catch (e) {}
+    await audioEl.play();
+  } else {
+    // Caminho direto — sem MediaStreamDestination, sem Audio element
+    outputNode.connect(audioCtx.destination);
+    audioEl = null;
   }
-
-  await audioEl.play();
   await requestWakeLock();
   startSilentAudio();
 
