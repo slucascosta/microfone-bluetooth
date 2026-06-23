@@ -1,4 +1,4 @@
-const CACHE = 'mic-v2';
+const CACHE = 'mic-v3';
 const ASSETS = [
   '/microfone-bluetooth/',
   '/microfone-bluetooth/index.html',
@@ -8,6 +8,8 @@ const ASSETS = [
   '/microfone-bluetooth/components/audio-visualizer.js',
   '/microfone-bluetooth/components/volume-control.js',
   '/microfone-bluetooth/components/settings-sheet.js',
+  '/microfone-bluetooth/audio/filters.js',
+  '/microfone-bluetooth/audio/audio-engine.js',
 ];
 
 // Instala e cacheia os arquivos
